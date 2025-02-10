@@ -1,0 +1,1 @@
+//! The [clap-logflag](https://crates.io/crates/clap-logflag) library

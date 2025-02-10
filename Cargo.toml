@@ -1,0 +1,14 @@
+[package]
+name = "clap-logflag"
+authors = ["Sebastian Messmer <messmer@cryfs.org>"]
+documentation = "https://docs.rs/clap-logflag"
+version = "0.0.1"
+edition = "2021"
+# TODO categories, description, keywords
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/smessmer/clap-logflag"
+# TODO Which rust-version?
+rust-version = "1.59"
+
+[dependencies]
