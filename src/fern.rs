@@ -1,5 +1,5 @@
 use anyhow::Result;
-use fern::Dispatch;
+use fern::{Dispatch, FormatCallback};
 
 use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 
@@ -46,13 +46,8 @@ fn build_logger(
 ) -> Result<Dispatch> {
     let logger = Dispatch::new().level(config.level.unwrap_or(default_level));
     let logger = match &config.destination {
-        LogDestination::Stderr => logger
-            .format(move |out, message, record| {
-                // TODO Better format, i.e. with time, and colored.
-                out.finish(format_args!("[{}] {}", record.level(), message,))
-            })
-            .chain(std::io::stderr()),
-        LogDestination::File(path) => logger.chain(fern::log_file(path)?),
+        LogDestination::Stderr => logger.format(log_formatter).chain(std::io::stderr()),
+        LogDestination::File(path) => logger.format(log_formatter).chain(fern::log_file(path)?),
         LogDestination::Syslog => {
             let syslog_formatter = syslog::Formatter3164 {
                 facility: syslog::Facility::LOG_USER,
@@ -64,6 +59,11 @@ fn build_logger(
         }
     };
     Ok(logger)
+}
+
+fn log_formatter(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
+    // TODO Better format, i.e. with time, and colored.
+    return out.finish(format_args!("[{}] {}", record.level(), message,));
 }
 
 /// Get a process name. Try in the following order:
