@@ -10,6 +10,8 @@ use log::LevelFilter;
 
 use super::config::{LogDestination, LogDestinationConfig};
 
+// TODO Allow lowercase for log levels
+
 const LEVEL_ERROR: &str = "ERROR";
 const LEVEL_WARN: &str = "WARN";
 const LEVEL_INFO: &str = "INFO";
