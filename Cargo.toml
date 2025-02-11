@@ -17,6 +17,7 @@ fern = {version = "^0.7", features = ["syslog-7"]}
 syslog = "^7"
 anyhow = "^1"
 chumsky = "^0.9"
+clap = {version = "^4", features = ["derive"]}
 
 [dev-dependencies]
 rstest = "^0.24"
