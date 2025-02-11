@@ -3,6 +3,7 @@ use fern::Dispatch;
 
 use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 
+// TODO Get app_name from argv instead of as argument
 pub fn init_logging(config: LoggingConfig, app_name: &str) {
     match config {
         LoggingConfig::LoggingDisabled => (),
