@@ -5,7 +5,9 @@
 //! It can log to stderr, files and syslog.
 
 mod config;
+mod fern;
 
 pub use config::{
     LogDestination, LogDestinationConfig, LoggingConfig,
 };
+pub use fern::init_logging;
