@@ -12,7 +12,8 @@ macro_rules! init_logging {
             $default_level,
             option_env!("CARGO_BIN_NAME"),
             env!("CARGO_CRATE_NAME"),
-        );
+        )
+        .expect("Failed to initialize logging");
     }};
 }
 
@@ -22,9 +23,9 @@ pub fn _init_logging(
     default_level: log::LevelFilter,
     cargo_bin_name: Option<&str>,
     cargo_crate_name: &str,
-) {
+) -> Result<()> {
     match config {
-        LoggingConfig::LoggingDisabled => (),
+        LoggingConfig::LoggingDisabled => Ok(()),
         LoggingConfig::LoggingEnabled { destinations } => {
             let process_name = process_name(cargo_bin_name, cargo_crate_name);
 
@@ -34,7 +35,8 @@ pub fn _init_logging(
                     main_logger = main_logger.chain(logger);
                 }
             }
-            main_logger.apply().unwrap();
+            main_logger.apply()?;
+            Ok(())
         }
     }
 }
