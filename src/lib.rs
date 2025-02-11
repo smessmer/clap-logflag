@@ -13,4 +13,4 @@ mod parser;
 
 pub use clap::LogArgs;
 pub use config::{LogDestination, LogDestinationConfig, LoggingConfig};
-pub use fern::init_logging;
+pub use fern::_init_logging;

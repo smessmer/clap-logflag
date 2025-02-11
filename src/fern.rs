@@ -3,14 +3,40 @@ use fern::Dispatch;
 
 use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 
-// TODO Get app_name from argv instead of as argument
-pub fn init_logging(config: LoggingConfig, default_level: log::LevelFilter, app_name: &str) {
+/// TODO Documentation
+#[macro_export]
+macro_rules! init_logging {
+    ($config:expr, $default_level:expr) => {{
+        $crate::_init_logging(
+            $config,
+            $default_level,
+            option_env!("CARGO_BIN_NAME"),
+            env!("CARGO_CRATE_NAME"),
+        );
+    }};
+}
+
+/// Don't use this function directly, use the [init_logging!] macro instead.
+pub fn _init_logging(
+    config: LoggingConfig,
+    default_level: log::LevelFilter,
+    cargo_bin_name: Option<&str>,
+    cargo_crate_name: &str,
+) {
     match config {
         LoggingConfig::LoggingDisabled => (),
         LoggingConfig::LoggingEnabled { destinations } => {
+            let process_name = exe_name()
+                .unwrap_or_else(|| {
+                    cargo_bin_name
+                        .map(str::to_string)
+                        .unwrap_or_else(|| cargo_crate_name.to_string())
+                })
+                .to_string();
+
             let mut main_logger = Dispatch::new();
             for destination in destinations {
-                if let Ok(logger) = build_logger(destination, default_level, app_name) {
+                if let Ok(logger) = build_logger(destination, default_level, process_name.clone()) {
                     main_logger = main_logger.chain(logger);
                 }
             }
@@ -22,7 +48,7 @@ pub fn init_logging(config: LoggingConfig, default_level: log::LevelFilter, app_
 fn build_logger(
     config: LogDestinationConfig,
     default_level: log::LevelFilter,
-    app_name: &str,
+    process_name: String,
 ) -> Result<Dispatch> {
     let logger = Dispatch::new().level(config.level.unwrap_or(default_level));
     let logger = match &config.destination {
@@ -37,11 +63,22 @@ fn build_logger(
             let syslog_formatter = syslog::Formatter3164 {
                 facility: syslog::Facility::LOG_USER,
                 hostname: None,
-                process: app_name.to_owned(),
+                process: process_name,
                 pid: 0,
             };
             logger.chain(syslog::unix(syslog_formatter)?)
         }
     };
     Ok(logger)
+}
+
+fn exe_name() -> Option<String> {
+    std::env::current_exe()
+        .map(|exe_path| {
+            exe_path
+                .file_name()
+                .and_then(std::ffi::OsStr::to_str)
+                .map(str::to_string)
+        })
+        .unwrap_or(None)
 }

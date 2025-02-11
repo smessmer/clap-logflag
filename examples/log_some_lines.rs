@@ -14,7 +14,7 @@ struct CliArgs {
 
 fn main() {
     let args = CliArgs::parse();
-    clap_logflag::init_logging(args.log.into(), args.default_level, "app name");
+    clap_logflag::init_logging!(args.log.into(), args.default_level);
 
     log::trace!("Some trace log");
     log::debug!("Some debug log");
