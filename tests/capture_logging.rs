@@ -171,6 +171,34 @@ fn two_files(
     assert_eq!("", stderr);
 }
 
+#[apply(default_level)]
+#[apply(filter_level_1)]
+#[apply(filter_level_2)]
+#[rstest]
+fn file_and_stderr(
+    default_level: LevelFilter,
+    filter_level_1: (Option<LevelFilter>, &str),
+    filter_level_2: (Option<LevelFilter>, &str),
+) {
+    let logfile = TempLogFile::setup();
+    let stderr = run_cli(
+        default_level,
+        &[
+            "--log",
+            &format!(
+                "{}file:{}",
+                filter_level_1.1,
+                logfile.logfile_path().display()
+            ),
+            "--log",
+            &format!("{}stderr", filter_level_2.1,),
+        ],
+    );
+    let expected_level_1 = filter_level_1.0.unwrap_or(default_level);
+    let expected_level_2 = filter_level_2.0.unwrap_or(default_level);
+    logfile.assert_was_created_with_content(&expected_log(expected_level_1));
+    assert_eq!(expected_log(expected_level_2), stderr);
+}
+
 // TODO Tests for logging to syslog
 // TODO Tests for disabling logging
-// TODO Tests for multiple log destinations
