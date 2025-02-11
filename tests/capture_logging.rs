@@ -124,7 +124,7 @@ fn stderr(default_level: LevelFilter, filter_level_1: (Option<LevelFilter>, &str
     let actual_log = run_cli(default_level, &["--log", &log_arg_stderr(filter_level_1.1)]);
     let expected_level = filter_level_1.0.unwrap_or(default_level);
     let expected_log_regex = expected_log_regex(expected_level);
-    assert!(predicates::str::is_match(&expected_log_regex)
+    assert!(predicates::str::is_match(expected_log_regex)
         .unwrap()
         .eval(&actual_log));
 }
@@ -221,7 +221,7 @@ fn file_and_stderr(
     let expected_level_2 = filter_level_2.0.unwrap_or(default_level);
     logfile.assert_was_created_with_content(&expected_log_regex(expected_level_1));
     assert!(
-        predicates::str::is_match(&expected_log_regex(expected_level_2))
+        predicates::str::is_match(expected_log_regex(expected_level_2))
             .unwrap()
             .eval(&stderr)
     );
