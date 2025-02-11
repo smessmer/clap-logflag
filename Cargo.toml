@@ -13,11 +13,12 @@ rust-version = "1.78"
 
 [dependencies]
 log = "^0.4.8"
-fern = {version = "^0.7.1", features = ["syslog-7"]}
+fern = {version = "^0.7.1", features = ["syslog-7", "colored"]}
 syslog = "^7"
 anyhow = "^1.0.46"
 chumsky = "^0.9"
 clap = {version = "^4", features = ["derive"]}
+humantime = "^2.1"
 
 [dev-dependencies]
 rstest = "^0.24"

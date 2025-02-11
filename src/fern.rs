@@ -1,5 +1,10 @@
+use std::io::IsTerminal as _;
+
 use anyhow::Result;
-use fern::{Dispatch, FormatCallback};
+use fern::{
+    colors::{Color, ColoredLevelConfig},
+    Dispatch, FormatCallback,
+};
 
 use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 
@@ -48,8 +53,10 @@ fn build_logger(
 ) -> Result<Dispatch> {
     let logger = Dispatch::new().level(config.level.unwrap_or(default_level));
     let logger = match &config.destination {
-        LogDestination::Stderr => logger.format(log_formatter).chain(std::io::stderr()),
-        LogDestination::File(path) => logger.format(log_formatter).chain(fern::log_file(path)?),
+        LogDestination::Stderr => logger.format(log_formatter_stderr).chain(std::io::stderr()),
+        LogDestination::File(path) => logger
+            .format(log_formatter_file)
+            .chain(fern::log_file(path)?),
         LogDestination::Syslog => {
             let syslog_formatter = syslog::Formatter3164 {
                 facility: syslog::Facility::LOG_USER,
@@ -63,9 +70,38 @@ fn build_logger(
     Ok(logger)
 }
 
-fn log_formatter(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
-    // TODO Better format, i.e. with time, and colored.
-    out.finish(format_args!("[{}] {}", record.level(), message))
+fn log_formatter_stderr(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
+    if std::io::stderr().is_terminal() {
+        log_formatter_tty(out, message, record)
+    } else {
+        log_formatter_file(out, message, record)
+    }
+}
+
+fn log_formatter_tty(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
+    let colors = ColoredLevelConfig::new()
+        .trace(Color::Magenta)
+        .debug(Color::Cyan)
+        .info(Color::Green)
+        .warn(Color::Yellow)
+        .error(Color::Red);
+    out.finish(format_args!(
+        "[{} {} {}] {}",
+        humantime::format_rfc3339_seconds(std::time::SystemTime::now()),
+        colors.color(record.level()),
+        record.target(),
+        message
+    ))
+}
+
+fn log_formatter_file(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
+    out.finish(format_args!(
+        "[{} {} {}] {}",
+        humantime::format_rfc3339_seconds(std::time::SystemTime::now()),
+        record.level(),
+        record.target(),
+        message
+    ))
 }
 
 /// Get a process name. Try in the following order:
