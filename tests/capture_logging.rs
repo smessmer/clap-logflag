@@ -4,7 +4,7 @@ use log::LevelFilter;
 use predicates::prelude::*;
 use rstest::rstest;
 use rstest_reuse::{self, *};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[template]
 fn default_level(
@@ -86,7 +86,7 @@ fn log_arg_stderr(level: &str) -> String {
     format!("{}stderr", level)
 }
 
-fn log_arg_file(level: &str, path: &PathBuf) -> String {
+fn log_arg_file(level: &str, path: &Path) -> String {
     format!("{}file:{}", level, path.display())
 }
 
