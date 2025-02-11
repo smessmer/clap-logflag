@@ -9,7 +9,7 @@ struct CliArgs {
 
     /// A real cli app would not allow users to pass in the default level but hardcode it.
     /// We're just doing that here to make this example useful for our integration tests.
-    #[clap(long)]
+    #[arg(long)]
     default_level: LevelFilter,
 }
 
