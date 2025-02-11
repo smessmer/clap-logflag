@@ -99,3 +99,8 @@ fn stderr_with_level(
     );
     assert_eq!(expected_log(filter_level.0), actual_log);
 }
+
+// TODO Tests for logging to file
+// TODO Tests for logging to syslog
+// TODO Tests for disabling logging
+// TODO Tests for multiple log destinations

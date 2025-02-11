@@ -28,6 +28,7 @@ fn build_logger(
     let logger = match &config.destination {
         LogDestination::Stderr => logger
             .format(move |out, message, record| {
+                // TODO Better format, i.e. with time, and colored.
                 out.finish(format_args!("[{}] {}", record.level(), message,))
             })
             .chain(std::io::stderr()),
