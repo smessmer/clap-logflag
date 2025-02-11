@@ -31,3 +31,15 @@ fn parse_destination_config(input: &str) -> Result<LogDestinationConfig, String>
         .map_err(|err| err.to_string())
         .and_then(|config| config.ok_or_else(|| "Failed to parse log config".to_string()))
 }
+
+impl From<LogArgs> for crate::config::LoggingConfig {
+    fn from(args: LogArgs) -> Self {
+        if args.log.is_empty() {
+            Self::LoggingDisabled
+        } else {
+            Self::LoggingEnabled {
+                destinations: args.log,
+            }
+        }
+    }
+}
