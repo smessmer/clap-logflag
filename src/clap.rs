@@ -22,7 +22,7 @@ pub struct LogArgs {
     /// * "INFO:stderr"
     /// * "DEBUG:file:/path/to/file"
     /// * "TRACE:syslog"
-    #[clap(long, value_parser=parse_destination_config)]
+    #[arg(long, value_parser=parse_destination_config)]
     pub log: Vec<LogDestinationConfig>,
 }
 

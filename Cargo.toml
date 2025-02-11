@@ -12,10 +12,10 @@ repository = "https://github.com/smessmer/clap-logflag"
 rust-version = "1.78"
 
 [dependencies]
-log = "^0.4"
-fern = {version = "^0.7", features = ["syslog-7"]}
+log = "^0.4.8"
+fern = {version = "^0.7.1", features = ["syslog-7"]}
 syslog = "^7"
-anyhow = "^1"
+anyhow = "^1.0.46"
 chumsky = "^0.9"
 clap = {version = "^4", features = ["derive"]}
 
