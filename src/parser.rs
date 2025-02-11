@@ -37,11 +37,11 @@ pub fn parse_config_definition(
     input: &str,
     default_level: LevelFilter,
 ) -> Result<Option<LogDestinationConfig>> {
-    Ok(config_definition(default_level)
+    config_definition(default_level)
         .or_not()
         .then_ignore(end())
         .parse(input)
-        .map_err(|err| anyhow!("Failed to parse log config: {err:?}"))?)
+        .map_err(|err| anyhow!("Failed to parse log config: {err:?}"))
 }
 
 fn config_definition(
@@ -73,7 +73,7 @@ fn log_destination() -> impl Parser<char, LogDestination, Error = Simple<char>> 
         just(DEST_SYSLOG).to(LogDestination::Syslog),
         just(DEST_FILE)
             .ignore_then(just(':'))
-            .ignore_then(path().map(|path| LogDestination::File(path))),
+            .ignore_then(path().map(LogDestination::File)),
     ))
 }
 
