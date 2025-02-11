@@ -22,13 +22,14 @@ fn default_level(
 #[template]
 fn filter_level(
     #[values(
-        (LevelFilter::Error, "ERROR"),
-        (LevelFilter::Warn, "WARN"),
-        (LevelFilter::Info, "INFO"),
-        (LevelFilter::Debug, "DEBUG"),
-        (LevelFilter::Trace, "TRACE")
+        (Some(LevelFilter::Error), "ERROR:"),
+        (Some(LevelFilter::Warn), "WARN:"),
+        (Some(LevelFilter::Info), "INFO:"),
+        (Some(LevelFilter::Debug), "DEBUG:"),
+        (Some(LevelFilter::Trace), "TRACE:"),
+        (None, "")
     )]
-    filter_level: (LevelFilter, &str),
+    filter_level: (Option<LevelFilter>, &str),
 ) {
 }
 
@@ -69,38 +70,15 @@ fn run_cli(default_level: LevelFilter, log_args: &[&str]) -> String {
 }
 
 #[apply(default_level)]
-#[rstest]
-fn stderr_without_level(default_level: LevelFilter) {
-    let actual_log = run_cli(default_level, &["--log", "stderr"]);
-    assert_eq!(expected_log(default_level), actual_log);
-}
-
-#[apply(default_level)]
 #[apply(filter_level)]
 #[rstest]
-fn stderr_with_level(
-    #[values(
-        LevelFilter::Error,
-        LevelFilter::Warn,
-        LevelFilter::Info,
-        LevelFilter::Debug,
-        LevelFilter::Trace
-    )]
-    default_level: LevelFilter,
-    #[values(
-        (LevelFilter::Error, "ERROR"),
-        (LevelFilter::Warn, "WARN"),
-        (LevelFilter::Info, "INFO"),
-        (LevelFilter::Debug, "DEBUG"),
-        (LevelFilter::Trace, "TRACE")
-    )]
-    filter_level: (LevelFilter, &str),
-) {
+fn stderr(default_level: LevelFilter, filter_level: (Option<LevelFilter>, &str)) {
     let actual_log = run_cli(
         default_level,
-        &["--log", &format!("{}:stderr", filter_level.1)],
+        &["--log", &format!("{}stderr", filter_level.1)],
     );
-    assert_eq!(expected_log(filter_level.0), actual_log);
+    let expected_level = filter_level.0.unwrap_or(default_level);
+    assert_eq!(expected_log(expected_level), actual_log);
 }
 
 struct TempLogFile {
@@ -125,37 +103,23 @@ impl TempLogFile {
 }
 
 #[apply(default_level)]
-#[rstest]
-fn file_without_level(default_level: LevelFilter) {
-    let logfile = TempLogFile::setup();
-    let stderr = run_cli(
-        default_level,
-        &[
-            "--log",
-            &format!("file:{}", logfile.logfile_path().display()),
-        ],
-    );
-    logfile.assert_was_created_with_content(&expected_log(default_level));
-    assert_eq!("", stderr);
-}
-
-#[apply(default_level)]
 #[apply(filter_level)]
 #[rstest]
-fn file_with_level(default_level: LevelFilter, filter_level: (LevelFilter, &str)) {
+fn file(default_level: LevelFilter, filter_level: (Option<LevelFilter>, &str)) {
     let logfile = TempLogFile::setup();
     let stderr = run_cli(
         default_level,
         &[
             "--log",
             &format!(
-                "{}:file:{}",
-                filter_level.0,
+                "{}file:{}",
+                filter_level.1,
                 logfile.logfile_path().display()
             ),
         ],
     );
-    logfile.assert_was_created_with_content(&expected_log(filter_level.0));
+    let expected_level = filter_level.0.unwrap_or(default_level);
+    logfile.assert_was_created_with_content(&expected_log(expected_level));
     assert_eq!("", stderr);
 }
 
