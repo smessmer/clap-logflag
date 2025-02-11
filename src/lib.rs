@@ -4,6 +4,8 @@
 //! to allow CLI users to configure logging from the command line.
 //! It can log to stderr, files and syslog.
 
-pub fn dummy() {
-    println!("dummy");
-}
+mod config;
+
+pub use config::{
+    LogDestination, LogDestinationConfig, LoggingConfig,
+};

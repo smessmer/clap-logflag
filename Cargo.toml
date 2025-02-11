@@ -12,3 +12,4 @@ repository = "https://github.com/smessmer/clap-logflag"
 rust-version = "1.78"
 
 [dependencies]
+log = "^0.4"
