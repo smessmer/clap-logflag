@@ -4,6 +4,8 @@
 //! to allow CLI users to configure logging from the command line.
 //! It can log to stderr, files and syslog.
 
+// TODO Enforce doc comments, no unsafe, ...
+
 mod config;
 mod fern;
 mod parser;
