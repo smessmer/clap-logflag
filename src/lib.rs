@@ -6,6 +6,7 @@
 
 mod config;
 mod fern;
+mod parser;
 
 pub use config::{
     LogDestination, LogDestinationConfig, LoggingConfig,

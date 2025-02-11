@@ -16,4 +16,8 @@ log = "^0.4"
 fern = {version = "^0.7", features = ["syslog-7"]}
 syslog = "^7"
 anyhow = "^1"
+chumsky = "^0.9"
 
+[dev-dependencies]
+rstest = "^0.24"
+rstest_reuse = "^0.7"
