@@ -3,6 +3,7 @@ use log::LevelFilter;
 
 #[derive(Debug, Parser)]
 struct CliArgs {
+    /// Use this to add the log flags to your application
     #[clap(flatten)]
     log: clap_logflag::LogArgs,
 
@@ -14,7 +15,9 @@ struct CliArgs {
 
 fn main() {
     let args = CliArgs::parse();
-    clap_logflag::init_logging!(args.log.into(), args.default_level);
+
+    // Initialize logging with the flags from clap
+    clap_logflag::init_logging!(args.log, args.default_level);
 
     log::trace!("Some trace log");
     log::debug!("Some debug log");
