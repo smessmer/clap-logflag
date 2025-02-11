@@ -3,7 +3,7 @@ name = "clap-logflag"
 authors = ["Sebastian Messmer <messmer@cryfs.org>"]
 description = "Adds a `--log` flag to clap based applications to allow CLI users to configure logging from the command line. Can log to stderr, files and syslog."
 documentation = "https://docs.rs/clap-logflag"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 # TODO categories, description, keywords
 license = "MIT OR Apache-2.0"
