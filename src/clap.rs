@@ -9,7 +9,7 @@ pub struct LogArgs {
     /// Log definition consisting of an optional log level, and a log destination.
     /// You can define this argument multiple times for multiple log destinations.
     ///
-    /// Format: [level:]destination
+    /// Format: \[level:\]destination
     ///
     /// level = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
     ///
