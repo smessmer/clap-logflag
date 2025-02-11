@@ -7,7 +7,7 @@ struct CliArgs {
     #[clap(flatten)]
     log: clap_logflag::LogArgs,
 
-    /// A real cli app would not allow users to pass in the default level but hardcode it.
+    /// A real cli app would likely hardcode a default level instead of allowing users to pass it in.
     /// We're just doing that here to make this example useful for our integration tests.
     #[arg(long)]
     default_level: LevelFilter,
