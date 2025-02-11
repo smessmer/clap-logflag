@@ -4,7 +4,8 @@
 //! to allow CLI users to configure logging from the command line.
 //! It can log to stderr, files and syslog.
 
-// TODO Enforce doc comments, no unsafe, ...
+#![forbid(unsafe_code)]
+// TODO #![deny(missing_docs)]
 
 mod clap;
 mod config;
