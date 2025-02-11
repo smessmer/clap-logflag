@@ -53,7 +53,7 @@ fn build_logger(
                 facility: syslog::Facility::LOG_USER,
                 hostname: None,
                 process: process_name,
-                pid: 0,
+                pid: std::process::id(),
             };
             logger.chain(syslog::unix(syslog_formatter)?)
         }
