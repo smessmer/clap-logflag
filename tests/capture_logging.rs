@@ -1,4 +1,4 @@
-use assert_fs::{assert::PathAssert as _, prelude::PathChild as _, TempDir};
+use assert_fs::{assert::PathAssert as _, fixture::ChildPath, prelude::PathChild as _, TempDir};
 use escargot::CargoBuild;
 use log::LevelFilter;
 use predicates::prelude::*;
@@ -82,14 +82,19 @@ fn run_cli(default_level: LevelFilter, log_args: &[&str]) -> String {
     String::from_utf8(output.stderr).unwrap()
 }
 
+fn log_arg_stderr(level: &str) -> String {
+    format!("{}stderr", level)
+}
+
+fn log_arg_file(level: &str, path: &PathBuf) -> String {
+    format!("{}file:{}", level, path.display())
+}
+
 #[apply(default_level)]
 #[apply(filter_level_1)]
 #[rstest]
 fn stderr(default_level: LevelFilter, filter_level_1: (Option<LevelFilter>, &str)) {
-    let actual_log = run_cli(
-        default_level,
-        &["--log", &format!("{}stderr", filter_level_1.1)],
-    );
+    let actual_log = run_cli(default_level, &["--log", &log_arg_stderr(filter_level_1.1)]);
     let expected_level = filter_level_1.0.unwrap_or(default_level);
     assert_eq!(expected_log(expected_level), actual_log);
 }
@@ -105,13 +110,17 @@ impl TempLogFile {
     }
 
     pub fn logfile_path(&self) -> PathBuf {
-        self.tempdir.path().join("log")
+        self.logfile().path().to_path_buf()
     }
 
     pub fn assert_was_created_with_content(&self, expected_log: &str) {
-        let log_file = self.tempdir.child("log");
+        let log_file = self.logfile();
         log_file.assert(predicate::path::exists());
         log_file.assert(expected_log);
+    }
+
+    fn logfile(&self) -> ChildPath {
+        self.tempdir.child("logfile")
     }
 }
 
@@ -124,11 +133,7 @@ fn file(default_level: LevelFilter, filter_level_1: (Option<LevelFilter>, &str))
         default_level,
         &[
             "--log",
-            &format!(
-                "{}file:{}",
-                filter_level_1.1,
-                logfile.logfile_path().display()
-            ),
+            &log_arg_file(filter_level_1.1, &logfile.logfile_path()),
         ],
     );
     let expected_level = filter_level_1.0.unwrap_or(default_level);
@@ -151,17 +156,9 @@ fn two_files(
         default_level,
         &[
             "--log",
-            &format!(
-                "{}file:{}",
-                filter_level_1.1,
-                logfile1.logfile_path().display()
-            ),
+            &log_arg_file(filter_level_1.1, &logfile1.logfile_path()),
             "--log",
-            &format!(
-                "{}file:{}",
-                filter_level_2.1,
-                logfile2.logfile_path().display()
-            ),
+            &log_arg_file(filter_level_2.1, &logfile2.logfile_path()),
         ],
     );
     let expected_level_1 = filter_level_1.0.unwrap_or(default_level);
@@ -185,13 +182,9 @@ fn file_and_stderr(
         default_level,
         &[
             "--log",
-            &format!(
-                "{}file:{}",
-                filter_level_1.1,
-                logfile.logfile_path().display()
-            ),
+            &log_arg_file(filter_level_1.1, &logfile.logfile_path()),
             "--log",
-            &format!("{}stderr", filter_level_2.1,),
+            &log_arg_stderr(filter_level_2.1),
         ],
     );
     let expected_level_1 = filter_level_1.0.unwrap_or(default_level);
