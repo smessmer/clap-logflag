@@ -6,13 +6,11 @@
 
 // TODO Enforce doc comments, no unsafe, ...
 
+mod clap;
 mod config;
 mod fern;
 mod parser;
-mod clap;
 
-pub use config::{
-    LogDestination, LogDestinationConfig, LoggingConfig,
-};
-pub use fern::init_logging;
 pub use clap::LogArgs;
+pub use config::{LogDestination, LogDestinationConfig, LoggingConfig};
+pub use fern::init_logging;

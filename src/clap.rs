@@ -10,9 +10,9 @@ pub struct LogArgs {
     /// You can define this argument multiple times for multiple log destinations.
     ///
     /// Format: [level:]destination
-    /// 
+    ///
     /// level = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
-    /// 
+    ///
     /// destination = "stderr" | "syslog" | "file:path"
     ///
     /// Examples:
@@ -26,9 +26,7 @@ pub struct LogArgs {
     pub log: Vec<LogDestinationConfig>,
 }
 
-fn parse_destination_config(
-    input: &str,
-) -> Result<LogDestinationConfig, String> {
+fn parse_destination_config(input: &str) -> Result<LogDestinationConfig, String> {
     crate::parser::parse_config_definition(input, log::LevelFilter::Info)
         .map_err(|err| err.to_string())
         .and_then(|config| config.ok_or_else(|| "Failed to parse log config".to_string()))

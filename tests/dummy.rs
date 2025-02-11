@@ -1,4 +1,4 @@
 #[test]
-fn dummy_integration_test(){
+fn dummy_integration_test() {
     // TODO
 }
