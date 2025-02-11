@@ -63,7 +63,7 @@ fn build_logger(
 
 fn log_formatter(out: FormatCallback, message: &std::fmt::Arguments, record: &log::Record) {
     // TODO Better format, i.e. with time, and colored.
-    return out.finish(format_args!("[{}] {}", record.level(), message,));
+    out.finish(format_args!("[{}] {}", record.level(), message))
 }
 
 /// Get a process name. Try in the following order:
