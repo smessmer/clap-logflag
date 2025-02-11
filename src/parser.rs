@@ -33,28 +33,20 @@ const DEST_FILE: &str = "file";
 /// * "INFO:stderr"
 /// * "DEBUG:file:/path/to/file"
 /// * "TRACE:syslog"
-pub fn parse_config_definition(
-    input: &str,
-    default_level: LevelFilter,
-) -> Result<Option<LogDestinationConfig>> {
-    config_definition(default_level)
+pub fn parse_config_definition(input: &str) -> Result<Option<LogDestinationConfig>> {
+    config_definition()
         .or_not()
         .then_ignore(end())
         .parse(input)
         .map_err(|err| anyhow!("Failed to parse log config: {err:?}"))
 }
 
-fn config_definition(
-    default_level: LevelFilter,
-) -> impl Parser<char, LogDestinationConfig, Error = Simple<char>> {
+fn config_definition() -> impl Parser<char, LogDestinationConfig, Error = Simple<char>> {
     log_level()
         .then_ignore(just(':'))
         .or_not()
         .then(log_destination())
-        .map(move |(level, destination)| LogDestinationConfig {
-            level: level.unwrap_or(default_level),
-            destination,
-        })
+        .map(move |(level, destination)| LogDestinationConfig { level, destination })
 }
 
 fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
@@ -91,18 +83,6 @@ mod tests {
     use super::*;
 
     #[template]
-    fn default_level(
-        #[values(
-            LevelFilter::Error,
-            LevelFilter::Warn,
-            LevelFilter::Info,
-            LevelFilter::Debug,
-            LevelFilter::Trace
-        )]
-        default_level: LevelFilter,
-    ) {
-    }
-    #[template]
     fn level(
         #[values(
             (LevelFilter::Error, LEVEL_ERROR),
@@ -121,50 +101,40 @@ mod tests {
     ) {
     }
 
-    #[apply(default_level)]
     #[rstest]
-    fn test_empty_config(default_level: LevelFilter) {
-        let config = parse_config_definition("", default_level).unwrap();
+    fn test_empty_config() {
+        let config = parse_config_definition("").unwrap();
         assert_eq!(None, config);
     }
 
-    #[apply(default_level)]
     #[apply(level)]
     #[rstest]
-    fn test_config_with_only_level(default_level: LevelFilter, level: (LevelFilter, &str)) {
-        let error = parse_config_definition(level.1, default_level).unwrap_err();
+    fn test_config_with_only_level(level: (LevelFilter, &str)) {
+        let error = parse_config_definition(level.1).unwrap_err();
         assert!(error.to_string().contains("Failed to parse log config"));
     }
 
-    #[apply(default_level)]
     #[apply(destination)]
     #[rstest]
-    fn test_with_default_level(default_level: LevelFilter, destination: (LogDestination, &str)) {
-        let config = parse_config_definition(destination.1, default_level).unwrap();
+    fn test_with_default_level(destination: (LogDestination, &str)) {
+        let config = parse_config_definition(destination.1).unwrap();
         assert_eq!(
             Some(LogDestinationConfig {
-                level: default_level,
+                level: None,
                 destination: destination.0,
             }),
             config
         );
     }
 
-    #[apply(default_level)]
     #[apply(level)]
     #[apply(destination)]
     #[rstest]
-    fn test_with_level(
-        default_level: LevelFilter,
-        level: (LevelFilter, &str),
-        destination: (LogDestination, &str),
-    ) {
-        let config =
-            parse_config_definition(&format!("{}:{}", level.1, destination.1), default_level)
-                .unwrap();
+    fn test_with_level(level: (LevelFilter, &str), destination: (LogDestination, &str)) {
+        let config = parse_config_definition(&format!("{}:{}", level.1, destination.1)).unwrap();
         assert_eq!(
             Some(LogDestinationConfig {
-                level: level.0,
+                level: Some(level.0),
                 destination: destination.0
             }),
             config

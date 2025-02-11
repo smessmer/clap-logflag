@@ -1,4 +1,5 @@
 use clap::Parser;
+use log::LevelFilter;
 
 #[derive(Debug, Parser)]
 struct CliArgs {
@@ -8,7 +9,7 @@ struct CliArgs {
 
 fn main() {
     let args = CliArgs::parse();
-    clap_logflag::init_logging(args.log.into(), "app name");
+    clap_logflag::init_logging(args.log.into(), LevelFilter::Info, "app name");
 
     log::trace!("Some trace log");
     log::debug!("Some debug log");

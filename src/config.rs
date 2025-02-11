@@ -18,5 +18,9 @@ pub enum LogDestination {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LogDestinationConfig {
     pub destination: LogDestination,
-    pub level: log::LevelFilter,
+
+    /// Only log messages at this level or higher to this destination.
+    ///
+    /// If `None`, the default level is used.
+    pub level: Option<log::LevelFilter>,
 }

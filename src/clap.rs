@@ -27,7 +27,7 @@ pub struct LogArgs {
 }
 
 fn parse_destination_config(input: &str) -> Result<LogDestinationConfig, String> {
-    crate::parser::parse_config_definition(input, log::LevelFilter::Info)
+    crate::parser::parse_config_definition(input)
         .map_err(|err| err.to_string())
         .and_then(|config| config.ok_or_else(|| "Failed to parse log config".to_string()))
 }
