@@ -26,13 +26,7 @@ pub fn _init_logging(
     match config {
         LoggingConfig::LoggingDisabled => (),
         LoggingConfig::LoggingEnabled { destinations } => {
-            let process_name = exe_name()
-                .unwrap_or_else(|| {
-                    cargo_bin_name
-                        .map(str::to_string)
-                        .unwrap_or_else(|| cargo_crate_name.to_string())
-                })
-                .to_string();
+            let process_name = process_name(cargo_bin_name, cargo_crate_name);
 
             let mut main_logger = Dispatch::new();
             for destination in destinations {
@@ -72,6 +66,21 @@ fn build_logger(
     Ok(logger)
 }
 
+/// Get a process name. Try in the following order:
+/// 1. Try getting it from argv, i.e. the name of the currently running executable
+/// 2. Try getting it from the `CARGO_BIN_NAME` environment variable
+/// 3. Get it from the `CARGO_CRATE_NAME` environment variable
+fn process_name(cargo_bin_name: Option<&str>, cargo_crate_name: &str) -> String {
+    exe_name()
+        .unwrap_or_else(|| {
+            cargo_bin_name
+                .map(str::to_string)
+                .unwrap_or_else(|| cargo_crate_name.to_string())
+        })
+        .to_string()
+}
+
+/// Get the currently running executable name from argv.
 fn exe_name() -> Option<String> {
     std::env::current_exe()
         .map(|exe_path| {
