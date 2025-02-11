@@ -7,6 +7,8 @@ use rstest_reuse::{self, *};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 
+// TODO It seems our CI codecov setup doesn't count coverage from integration tests? Why is that?
+
 #[template]
 fn default_level(
     #[values(
@@ -95,6 +97,8 @@ fn run_cli(default_level: LevelFilter, log_args: &[&str]) -> String {
     args.extend(["--default-level", &default_level_str]);
     let output = CargoBuild::new()
         .example("log_some_lines")
+        .current_release()
+        .current_target()
         .run()
         .unwrap()
         .command()
