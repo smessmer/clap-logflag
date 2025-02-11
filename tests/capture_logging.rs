@@ -1,7 +1,10 @@
+use assert_fs::{assert::PathAssert as _, prelude::PathChild as _, TempDir};
 use escargot::CargoBuild;
 use log::LevelFilter;
+use predicates::prelude::*;
 use rstest::rstest;
 use rstest_reuse::{self, *};
+use std::path::PathBuf;
 
 #[template]
 fn default_level(
@@ -100,7 +103,62 @@ fn stderr_with_level(
     assert_eq!(expected_log(filter_level.0), actual_log);
 }
 
-// TODO Tests for logging to file
+struct TempLogFile {
+    tempdir: TempDir,
+}
+
+impl TempLogFile {
+    pub fn setup() -> Self {
+        let tempdir = TempDir::new().unwrap();
+        Self { tempdir }
+    }
+
+    pub fn logfile_path(&self) -> PathBuf {
+        self.tempdir.path().join("log")
+    }
+
+    pub fn assert_was_created_with_content(&self, expected_log: &str) {
+        let log_file = self.tempdir.child("log");
+        log_file.assert(predicate::path::exists());
+        log_file.assert(expected_log);
+    }
+}
+
+#[apply(default_level)]
+#[rstest]
+fn file_without_level(default_level: LevelFilter) {
+    let logfile = TempLogFile::setup();
+    let stderr = run_cli(
+        default_level,
+        &[
+            "--log",
+            &format!("file:{}", logfile.logfile_path().display()),
+        ],
+    );
+    logfile.assert_was_created_with_content(&expected_log(default_level));
+    assert_eq!("", stderr);
+}
+
+#[apply(default_level)]
+#[apply(filter_level)]
+#[rstest]
+fn file_with_level(default_level: LevelFilter, filter_level: (LevelFilter, &str)) {
+    let logfile = TempLogFile::setup();
+    let stderr = run_cli(
+        default_level,
+        &[
+            "--log",
+            &format!(
+                "{}:file:{}",
+                filter_level.0,
+                logfile.logfile_path().display()
+            ),
+        ],
+    );
+    logfile.assert_was_created_with_content(&expected_log(filter_level.0));
+    assert_eq!("", stderr);
+}
+
 // TODO Tests for logging to syslog
 // TODO Tests for disabling logging
 // TODO Tests for multiple log destinations

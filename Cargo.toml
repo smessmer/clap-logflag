@@ -23,3 +23,5 @@ clap = {version = "^4", features = ["derive"]}
 rstest = "^0.24"
 rstest_reuse = "^0.7"
 escargot = "^0.5"
+assert_fs = "^1.1"
+predicates = "^3.1"
