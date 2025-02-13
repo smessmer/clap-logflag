@@ -11,7 +11,7 @@ use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 /// TODO Documentation
 #[macro_export]
 macro_rules! init_logging {
-    ($config:expr, $default_level:expr) => {{
+    ($config:expr, $default_level:expr $(,)?) => {{
         $crate::_init_logging(
             $config,
             $default_level,
