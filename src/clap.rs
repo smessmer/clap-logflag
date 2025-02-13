@@ -5,23 +5,26 @@ use crate::{LogDestinationConfig, LoggingConfig};
 #[derive(Parser, Debug)]
 pub struct LogArgs {
     // TODO Formatting of this is weird in `--help` output
-    // TODO Mention how to disable logging
     /// Log definition consisting of an optional log level, and a log destination.
     /// You can define this argument multiple times for multiple log destinations.
+    ///
+    /// Logging can be disabled with `--log none`.
+    /// If combined with other log definitions, those will take precedence and logging will not be disabled.
     ///
     /// Format: \[level:\]destination
     ///
     /// level = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
     ///
-    /// destination = "stderr" | "syslog" | "file:path"
+    /// destination = "stderr" | "syslog" | "file:path" | "none"
     ///
     /// Examples:
-    /// * "syslog"
-    /// * "stderr"
-    /// * "file:/path/to/file"
-    /// * "INFO:stderr"
-    /// * "DEBUG:file:/path/to/file"
-    /// * "TRACE:syslog"
+    /// * "--log syslog"
+    /// * "--log stderr"
+    /// * "--log file:/path/to/file"
+    /// * "--log INFO:stderr"
+    /// * "--log DEBUG:file:/path/to/file"
+    /// * "--log TRACE:syslog"
+    /// * "--log none"
     #[arg(long, value_parser=parse_destination_config)]
     pub log: Vec<Option<LogDestinationConfig>>,
 }
