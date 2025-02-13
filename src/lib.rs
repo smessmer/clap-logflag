@@ -72,6 +72,8 @@
 
 #![forbid(unsafe_code)]
 // TODO #![deny(missing_docs)]
+// We need to add explicit links because our `gen_readme.sh` script requires them.
+#![allow(rustdoc::redundant_explicit_links)]
 
 mod clap;
 mod config;
