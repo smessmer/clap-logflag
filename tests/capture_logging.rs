@@ -227,5 +227,38 @@ fn file_and_stderr(
     );
 }
 
+#[rstest]
+fn no_flag_uses_default_logging() {
+    // The test binary default logging means log to stderr, but only WARN and ERROR.
+
+    let stderr = run_cli(LevelFilter::Info, &[]);
+    assert!(
+        predicates::str::is_match(expected_log_regex(LevelFilter::Warn))
+            .unwrap()
+            .eval(&stderr)
+    );
+}
+
+#[rstest]
+fn disable_logging() {
+    let stderr = run_cli(LevelFilter::Info, &["--log", "none"]);
+    assert_eq!("", stderr);
+}
+
+#[rstest]
+fn disable_logging_with_two_nones() {
+    let stderr = run_cli(LevelFilter::Info, &["--log", "none", "--log", "none"]);
+    assert_eq!("", stderr);
+}
+
+#[rstest]
+fn none_destination_doesnt_disable_if_other_destination_is_present() {
+    let stderr = run_cli(LevelFilter::Info, &["--log", "none", "--log", "stderr"]);
+    assert!(
+        predicates::str::is_match(expected_log_regex(LevelFilter::Info))
+            .unwrap()
+            .eval(&stderr)
+    );
+}
+
 // TODO Tests for logging to syslog
-// TODO Tests for disabling logging

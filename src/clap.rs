@@ -1,6 +1,6 @@
 use clap::Parser;
 
-use crate::LogDestinationConfig;
+use crate::{LogDestinationConfig, LoggingConfig};
 
 #[derive(Parser, Debug)]
 pub struct LogArgs {
@@ -23,22 +23,29 @@ pub struct LogArgs {
     /// * "DEBUG:file:/path/to/file"
     /// * "TRACE:syslog"
     #[arg(long, value_parser=parse_destination_config)]
-    pub log: Vec<LogDestinationConfig>,
+    pub log: Vec<Option<LogDestinationConfig>>,
 }
 
-fn parse_destination_config(input: &str) -> Result<LogDestinationConfig, String> {
-    crate::parser::parse_config_definition(input)
-        .map_err(|err| err.to_string())
-        .and_then(|config| config.ok_or_else(|| "Failed to parse log config".to_string()))
+fn parse_destination_config(input: &str) -> Result<Option<LogDestinationConfig>, String> {
+    crate::parser::parse_config_definition(input).map_err(|err| err.to_string())
 }
 
-impl From<LogArgs> for crate::config::LoggingConfig {
-    fn from(args: LogArgs) -> Self {
-        if args.log.is_empty() {
-            Self::LoggingDisabled
+impl LogArgs {
+    pub fn or_default(&self, default: LoggingConfig) -> LoggingConfig {
+        if self.log.is_empty() {
+            // No `--log` argument given, use the default config
+            default
         } else {
-            Self::LoggingEnabled {
-                destinations: args.log,
+            // There are `--log` arguments given, but they may be `--log none`.
+            // Let's filter those out
+            let destinations: Vec<LogDestinationConfig> =
+                self.log.iter().filter_map(|log| log.clone()).collect();
+            if destinations.is_empty() {
+                // All `--log` arguments were `--log none`, disable logging
+                LoggingConfig::LoggingDisabled
+            } else {
+                // There was at least one `--log` argument that wasn't `--log none`, enable logging
+                LoggingConfig::LoggingEnabled { destinations }
             }
         }
     }

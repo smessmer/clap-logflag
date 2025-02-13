@@ -13,7 +13,7 @@ use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};
 macro_rules! init_logging {
     ($config:expr, $default_level:expr) => {{
         $crate::_init_logging(
-            $config.into(),
+            $config,
             $default_level,
             option_env!("CARGO_BIN_NAME"),
             env!("CARGO_CRATE_NAME"),
