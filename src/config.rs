@@ -10,8 +10,13 @@ pub enum LoggingConfig {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LogDestination {
+    /// Log to stderr
     Stderr,
+
+    /// Log to the file at the given path
     File(PathBuf),
+
+    /// Log to the system log
     Syslog,
 }
 

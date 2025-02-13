@@ -21,6 +21,7 @@ const LEVEL_TRACE: &str = "TRACE";
 const DEST_STDERR: &str = "stderr";
 const DEST_SYSLOG: &str = "syslog";
 const DEST_FILE: &str = "file";
+const DEST_NONE: &str = "none";
 
 /// Parse a log definition consisting of an optional log level, and a log destination.
 ///
@@ -37,18 +38,19 @@ const DEST_FILE: &str = "file";
 /// * "TRACE:syslog"
 pub fn parse_config_definition(input: &str) -> Result<Option<LogDestinationConfig>> {
     config_definition()
-        .or_not()
         .then_ignore(end())
         .parse(input)
         .map_err(|err| anyhow!("Failed to parse log config: {err:?}"))
 }
 
-fn config_definition() -> impl Parser<char, LogDestinationConfig, Error = Simple<char>> {
+fn config_definition() -> impl Parser<char, Option<LogDestinationConfig>, Error = Simple<char>> {
     log_level()
         .then_ignore(just(':'))
         .or_not()
         .then(log_destination())
-        .map(move |(level, destination)| LogDestinationConfig { level, destination })
+        .map(move |(level, destination)| {
+            destination.map(|destination| LogDestinationConfig { level, destination })
+        })
 }
 
 fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
@@ -61,13 +63,14 @@ fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
     ))
 }
 
-fn log_destination() -> impl Parser<char, LogDestination, Error = Simple<char>> {
+fn log_destination() -> impl Parser<char, Option<LogDestination>, Error = Simple<char>> {
     choice((
-        just(DEST_STDERR).to(LogDestination::Stderr),
-        just(DEST_SYSLOG).to(LogDestination::Syslog),
+        just(DEST_STDERR).to(Some(LogDestination::Stderr)),
+        just(DEST_SYSLOG).to(Some(LogDestination::Syslog)),
         just(DEST_FILE)
             .ignore_then(just(':'))
-            .ignore_then(path().map(LogDestination::File)),
+            .ignore_then(path().map(|file| Some(LogDestination::File(file)))),
+        just(DEST_NONE).to(None),
     ))
 }
 
@@ -104,8 +107,15 @@ mod tests {
     }
 
     #[rstest]
-    fn test_empty_config() {
-        let config = parse_config_definition("").unwrap();
+    fn test_none_without_level() {
+        let config = parse_config_definition("none").unwrap();
+        assert_eq!(None, config);
+    }
+
+    #[apply(level)]
+    #[rstest]
+    fn test_none_with_level(level: (LevelFilter, &str)) {
+        let config = parse_config_definition(&format!("{}:none", level.1)).unwrap();
         assert_eq!(None, config);
     }
 
