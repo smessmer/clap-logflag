@@ -55,35 +55,35 @@ fn expected_log_regex(filter_level: LevelFilter) -> String {
     if filter_level >= LevelFilter::Trace {
         write!(
             expected_log,
-            r"\[{timestamp_regex} TRACE log_some_lines\] Some trace log\n"
+            r"\[{timestamp_regex} TRACE integration_test\] Some trace log\n"
         )
         .unwrap();
     }
     if filter_level >= LevelFilter::Debug {
         write!(
             expected_log,
-            r"\[{timestamp_regex} DEBUG log_some_lines\] Some debug log\n"
+            r"\[{timestamp_regex} DEBUG integration_test\] Some debug log\n"
         )
         .unwrap();
     }
     if filter_level >= LevelFilter::Info {
         write!(
             expected_log,
-            r"\[{timestamp_regex} INFO log_some_lines\] Some info log\n"
+            r"\[{timestamp_regex} INFO integration_test\] Some info log\n"
         )
         .unwrap();
     }
     if filter_level >= LevelFilter::Warn {
         write!(
             expected_log,
-            r"\[{timestamp_regex} WARN log_some_lines\] Some warn log\n"
+            r"\[{timestamp_regex} WARN integration_test\] Some warn log\n"
         )
         .unwrap();
     }
     if filter_level >= LevelFilter::Error {
         write!(
             expected_log,
-            r"\[{timestamp_regex} ERROR log_some_lines\] Some error log\n"
+            r"\[{timestamp_regex} ERROR integration_test\] Some error log\n"
         )
         .unwrap();
     }
@@ -96,7 +96,7 @@ fn run_cli(default_level: LevelFilter, log_args: &[&str]) -> String {
     let default_level_str = default_level.to_string();
     args.extend(["--default-level", &default_level_str]);
     let output = CargoBuild::new()
-        .example("log_some_lines")
+        .example("integration_test")
         .current_release()
         .current_target()
         .run()

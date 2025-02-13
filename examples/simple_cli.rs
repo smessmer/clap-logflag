@@ -1,24 +1,22 @@
 use clap::Parser;
 use log::LevelFilter;
 
+const LOG_DEFAULT_LEVEL: LevelFilter = LevelFilter::Info;
+
 #[derive(Debug, Parser)]
 struct CliArgs {
-    /// Use this to add the log flags to your application
+    // Use this to add the log flags to your application
     #[clap(flatten)]
     log: clap_logflag::LogArgs,
-
-    /// A real cli app would likely hardcode a default level instead of allowing users to pass it in.
-    /// We're just doing that here to make this example useful for our integration tests.
-    #[arg(long)]
-    default_level: LevelFilter,
 }
 
 fn main() {
     let args = CliArgs::parse();
 
     // Initialize logging with the flags from clap
-    clap_logflag::init_logging!(args.log, args.default_level);
+    clap_logflag::init_logging!(args.log, LOG_DEFAULT_LEVEL);
 
+    // Issue some log messages
     log::trace!("Some trace log");
     log::debug!("Some debug log");
     log::info!("Some info log");
