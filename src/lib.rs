@@ -65,6 +65,10 @@
 //!     log::error!("Some error log");
 //! }
 //! ```
+//!
+//! # Syntax
+//! See [LogArgs](crate::clap::LogArgs) for a detailed explanation of the syntax for the `--log` argument.
+//!
 
 #![forbid(unsafe_code)]
 // TODO #![deny(missing_docs)]
