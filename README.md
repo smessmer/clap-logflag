@@ -38,7 +38,7 @@ $ ./your-cli
 ## Setup
 To use clap-logflag, first add [clap-logflag](https://crates.io/crates/clap-logflag), [clap](https://crates.io/crates/clap) and [log](https://crates.io/crates/log) to your `Cargo.toml`.
 
-Then, add the [LogArgs] struct to your clap definition and initialize logging with it:
+Then, add the [LogArgs](https://docs.rs/clap-logflag/latest/clap_logflag/clap/struct.LogArgs.html) struct to your clap definition and initialize logging with it:
 
 ```rust
 use clap::Parser;
