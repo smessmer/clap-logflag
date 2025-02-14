@@ -10,8 +10,6 @@
 
 <!-- cargo-rdme start -->
 
-[work in progress]
-
 The [clap-logflag](https://crates.io/crates/clap-logflag) library can be used to add a `--log` flag to
 [clap](https://crates.io/crates/clap) based command line applications that allows users to configure
 logging from the command line. It can log to stderr, files and syslog, powered by the
