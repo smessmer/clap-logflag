@@ -8,6 +8,8 @@ use crate::{LogDestinationConfig, LoggingConfig};
 ///
 /// # Example
 /// ```rust
+/// use clap::Parser;
+///
 /// #[derive(Debug, Parser)]
 /// struct CliArgs {
 ///     // Use this to add the log flags to your application
