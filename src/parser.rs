@@ -27,11 +27,12 @@ const DEST_NONE: &str = "none";
 ///
 /// Format: [level:]destination
 /// level = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
-/// destination = "stderr" | "syslog" | "file:path"
+/// destination = "stderr" | "syslog" | "file:path" | "none"
 ///
 /// Examples:
 /// * "syslog"
 /// * "stderr"
+/// * "none"
 /// * "file:/path/to/file"
 /// * "INFO:stderr"
 /// * "DEBUG:file:/path/to/file"
