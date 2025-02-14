@@ -24,6 +24,7 @@ impl LoggingConfig {
         }
     }
 
+    /// Get the list of destinations to log to.
     pub fn destinations(&self) -> &[LogDestinationConfig] {
         &self.destinations
     }

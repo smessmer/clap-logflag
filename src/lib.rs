@@ -83,7 +83,7 @@
 #![cfg_attr(all(), doc = ::embed_doc_image::embed_image!("example_log.png", "example_log.png"))]
 #![allow(clippy::needless_doctest_main)]
 #![forbid(unsafe_code)]
-// #![deny(missing_docs)]
+#![deny(missing_docs)]
 // We need to add explicit links because our `gen_readme.sh` script requires them.
 #![allow(rustdoc::redundant_explicit_links)]
 
