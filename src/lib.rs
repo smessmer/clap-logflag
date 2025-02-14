@@ -13,7 +13,8 @@
 //! # Log to both stderr and a file
 //! $ ./your-cli --log stderr --log file:/path/to/file
 //!
-//! # Filter log levels
+//! # Filter log levels. Debug (and higher) gets logged to stderr.
+//! # Info (and higher) additionally gets logged to a file.
 //! $ ./your-cli --log DEBUG:stderr --log INFO:file:/path/to/file
 //!
 //! # Disable logging
