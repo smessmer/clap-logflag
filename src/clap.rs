@@ -4,21 +4,8 @@ use crate::{LogDestinationConfig, LoggingConfig};
 
 // TODO Better error reporting when parsing fails
 
-/// A `--log` argument that can be added into your [clap] based CLI applications.
-///
-/// # Example
-/// ```rust
-/// use clap::Parser;
-///
-/// #[derive(Debug, Parser)]
-/// struct CliArgs {
-///     // Use this to add the log flags to your application
-///     #[clap(flatten)]
-///     log: clap_logflag::LogArgs,
-///     
-///     // ... your other cli args ...
-/// }
-/// ```
+// We need to remove doc comments here, otherwise clap adds them to the help message
+#[allow(missing_docs)]
 #[derive(Parser, Debug)]
 pub struct LogArgs {
     /// Log definition consisting of an optional log level filter, and a log destination.
