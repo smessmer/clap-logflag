@@ -19,6 +19,7 @@ anyhow = "^1.0.46"
 chumsky = "^0.9"
 clap = {version = "^4", features = ["derive"]}
 humantime = "^2.1"
+embed-doc-image = "^0.1.4"
 
 [dev-dependencies]
 rstest = "^0.24"

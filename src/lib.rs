@@ -73,8 +73,10 @@
 //! # Log Format
 //! The format of the log messages uses an opinionated, reasonably pretty format by default. At the moment, this library does not offer any way to modify the format.
 //!
+//! ![Example log file][example_log.png]
+//!
 //! ```bash
-//! [2025-02-14T00:16:14Z <span style="color:blue">TRACE</span> simple_cli] Some trace log
+//! [2025-02-14T00:16:14Z $${\color{blue}TRACE}$$ simple_cli] Some trace log
 //! [2025-02-14T00:16:14Z DEBUG simple_cli] Some debug log
 //! [2025-02-14T00:16:14Z INFO simple_cli] Some info log
 //! [2025-02-14T00:16:14Z WARN simple_cli] Some warn log
@@ -86,9 +88,7 @@
 //! When the logging destination is stderr and stderr is a terminal, then the log level is colorized.
 //! When logging to a file, syslog or to a stderr that is redirected to a file, the log level is not colorized.
 //!
-
-//TODO The crate documentation above doesn't colorize the log yet
-
+#![cfg_attr(all(), doc = ::embed_doc_image::embed_image!("example_log.png", "example_log.png"))]
 #![allow(clippy::needless_doctest_main)]
 #![forbid(unsafe_code)]
 // TODO #![deny(missing_docs)]

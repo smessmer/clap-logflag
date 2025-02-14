@@ -85,8 +85,10 @@ See [LogArgs](https://docs.rs/clap-logflag/latest/clap_logflag/clap/struct.LogAr
 ## Log Format
 The format of the log messages uses an opinionated, reasonably pretty format by default. At the moment, this library does not offer any way to modify the format.
 
+![Example log file](example_log.png)
+
 ```bash
-[2025-02-14T00:16:14Z <span style="color:blue">TRACE</span> simple_cli] Some trace log
+[2025-02-14T00:16:14Z $${\color{blue}TRACE}$$ simple_cli] Some trace log
 [2025-02-14T00:16:14Z DEBUG simple_cli] Some debug log
 [2025-02-14T00:16:14Z INFO simple_cli] Some info log
 [2025-02-14T00:16:14Z WARN simple_cli] Some warn log
