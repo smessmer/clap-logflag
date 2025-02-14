@@ -59,16 +59,9 @@ impl LogArgs {
             default
         } else {
             // There are `--log` arguments given, but they may be `--log none`.
-            // Let's filter those out
-            let destinations: Vec<LogDestinationConfig> =
-                self.log.iter().filter_map(|log| log.clone()).collect();
-            if destinations.is_empty() {
-                // All `--log` arguments were `--log none`, disable logging
-                LoggingConfig::LoggingDisabled
-            } else {
-                // There was at least one `--log` argument that wasn't `--log none`, enable logging
-                LoggingConfig::LoggingEnabled { destinations }
-            }
+            // Let's filter those out. If no non-none are remaining, logging will be disabled.
+            let destinations = self.log.iter().filter_map(|log| log.clone()).collect();
+            LoggingConfig::new(destinations)
         }
     }
 }

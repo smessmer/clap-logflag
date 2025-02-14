@@ -3,12 +3,30 @@ use std::path::PathBuf;
 /// This enum represents the whole logging configuration,
 /// including all logging destinations and their respective log level filters.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LoggingConfig {
-    // TODO It might be better to remove LoggingDisabled and instead represent it as an empty destination vector.
-    LoggingDisabled,
-    LoggingEnabled {
-        destinations: Vec<LogDestinationConfig>,
-    },
+pub struct LoggingConfig {
+    /// List of destinations to log to.
+    /// If the list of destinations is empty, logging is disabled.
+    destinations: Vec<LogDestinationConfig>,
+}
+
+impl LoggingConfig {
+    /// Create a new [LoggingConfig] with the given destinations.
+    ///
+    /// If the list of destinations is empty, logging is disabled.
+    pub fn new(destinations: Vec<LogDestinationConfig>) -> Self {
+        Self { destinations }
+    }
+
+    /// Create a [LoggingConfig] that disables logging.
+    pub fn disabled() -> Self {
+        Self {
+            destinations: vec![],
+        }
+    }
+
+    pub fn destinations(&self) -> &[LogDestinationConfig] {
+        &self.destinations
+    }
 }
 
 /// Configuration for a log destination, containing the destination and the log level.

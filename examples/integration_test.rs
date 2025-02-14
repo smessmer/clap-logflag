@@ -23,12 +23,10 @@ fn main() {
     clap_logflag::init_logging!(
         args.log
             // If no `--log` arguments are present, log to stderr but only log warnings and errors.
-            .or_default(LoggingConfig::LoggingEnabled {
-                destinations: vec![LogDestinationConfig {
-                    destination: clap_logflag::LogDestination::Stderr,
-                    level: Some(LevelFilter::Warn),
-                },],
-            }),
+            .or_default(LoggingConfig::new(vec![LogDestinationConfig {
+                destination: clap_logflag::LogDestination::Stderr,
+                level: Some(LevelFilter::Warn),
+            },],)),
         args.default_level
     );
 

@@ -20,7 +20,7 @@ fn main() {
             // If no `--log` arguments are present, disable logging.
             // You can change this to define the default behavior,
             // see the "default_logging" example.
-            .or_default(LoggingConfig::LoggingDisabled),
+            .or_default(LoggingConfig::disabled()),
         // Any `--log` argument that doesn't define a level filter will use the
         // default level filter defined here, `Info` in this example.
         LevelFilter::Info,

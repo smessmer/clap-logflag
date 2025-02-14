@@ -21,12 +21,10 @@ fn main() {
             // Note that if the user passes in `--log none`, this will not trigger the default
             // and logging will be disabled instead. The default is only used if no `--log`
             // arguments are present.
-            .or_default(LoggingConfig::LoggingEnabled {
-                destinations: vec![LogDestinationConfig {
-                    destination: clap_logflag::LogDestination::Stderr,
-                    level: None,
-                }],
-            }),
+            .or_default(LoggingConfig::new(vec![LogDestinationConfig {
+                destination: clap_logflag::LogDestination::Stderr,
+                level: None,
+            }],)),
         LOG_DEFAULT_LEVEL
     );
 

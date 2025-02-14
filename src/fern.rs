@@ -29,25 +29,25 @@ pub fn _init_logging(
     cargo_bin_name: Option<&str>,
     cargo_crate_name: &str,
 ) -> Result<()> {
-    match config {
-        LoggingConfig::LoggingDisabled => Ok(()),
-        LoggingConfig::LoggingEnabled { destinations } => {
-            let process_name = process_name(cargo_bin_name, cargo_crate_name);
+    if config.destinations().is_empty() {
+        // Logging is disabled
+        return Ok(());
+    }
 
-            let mut main_logger = Dispatch::new();
-            for destination in destinations {
-                if let Ok(logger) = build_logger(destination, default_level, process_name.clone()) {
-                    main_logger = main_logger.chain(logger);
-                }
-            }
-            main_logger.apply()?;
-            Ok(())
+    let process_name = process_name(cargo_bin_name, cargo_crate_name);
+
+    let mut main_logger = Dispatch::new();
+    for destination in config.destinations() {
+        if let Ok(logger) = build_logger(destination, default_level, process_name.clone()) {
+            main_logger = main_logger.chain(logger);
         }
     }
+    main_logger.apply()?;
+    Ok(())
 }
 
 fn build_logger(
-    config: LogDestinationConfig,
+    config: &LogDestinationConfig,
     default_level: log::LevelFilter,
     process_name: String,
 ) -> Result<Dispatch> {
