@@ -68,7 +68,7 @@
 //! ```
 //!
 //! # Flag Syntax
-//! See [LogArgs::log](crate::clap::LogArgs::log) for a detailed explanation of the syntax for the `--log` argument.
+//! See [LogArgs](crate::clap::LogArgs) for a detailed explanation of the syntax for the `--log` argument.
 //!
 //! # Log Format
 //! The format of the log messages uses an opinionated, reasonably pretty format by default. At the moment, this library does not offer a way to modify the format.
