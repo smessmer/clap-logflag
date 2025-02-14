@@ -2,6 +2,8 @@ use clap::Parser;
 
 use crate::{LogDestinationConfig, LoggingConfig};
 
+// TODO Better error reporting when parsing fails
+
 #[derive(Parser, Debug)]
 pub struct LogArgs {
     // TODO Formatting of this is weird in `--help` output
