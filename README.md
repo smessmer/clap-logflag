@@ -79,11 +79,11 @@ fn main() {
 }
 ```
 
-## FlagSyntax
+## Flag Syntax
 See [LogArgs](https://docs.rs/clap-logflag/latest/clap_logflag/clap/struct.LogArgs.html) for a detailed explanation of the syntax for the `--log` argument.
 
 ## Log Format
-The format of the log messages uses an opinionated, reasonably pretty format by default. At the moment, this library does not offer any way to modify the format.
+The format of the log messages uses an opinionated, reasonably pretty format by default. At the moment, this library does not offer a way to modify the format.
 
 ![Example log file](example_log.png)
 
