@@ -80,6 +80,43 @@
 //! When the logging destination is stderr and stderr is a terminal, then the log level is colorized.
 //! When logging to a file, syslog or to a stderr that is redirected to a file, the log level is not colorized.
 //!
+//! # Help message
+//! [clap-logflag](https://crates.io/crates/clap-logflag) will automatically add a detailed help message to the `--help` output of your application,
+//! explaining the usage of the `--log` flag to your users.
+//! At the moment, this library does not offer a way to modify the help message.
+//!
+//! ```bash
+//! Usage: simple_cli [OPTIONS]
+//!
+//! Options:
+//! --log <LOG>
+//!     Log definition consisting of an optional log level filter, and a log destination.
+//!     You can define this argument multiple times for multiple log destinations.
+//!     
+//!     Logging can be disabled with `--log none`.
+//!     If combined with other log definitions, those will take precedence and logging will not be disabled.
+//!     
+//!     The argument can be combined with a level filter to only log messages of a certain level or higher to that destination.
+//!     
+//!     Format: destination | level_filter:destination
+//!     * level_filter = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
+//!     * destination = "stderr" | "syslog" | "file:path" | "none"
+//!     
+//!     Examples:
+//!     * `--log syslog`
+//!     * `--log stderr`
+//!     * `--log file:/path/to/file`
+//!     * `--log INFO:stderr`
+//!     * `--log DEBUG:file:/path/to/file`
+//!     * `--log TRACE:syslog`
+//!     * `--log none`
+//!
+//! -h, --help
+//!     Print help (see a summary with '-h')
+//!
+//! ```
+//!
+
 #![cfg_attr(all(), doc = ::embed_doc_image::embed_image!("example_log.png", "example_log.png"))]
 #![allow(clippy::needless_doctest_main)]
 #![forbid(unsafe_code)]
