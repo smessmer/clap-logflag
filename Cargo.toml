@@ -5,7 +5,8 @@ description = "This library can be used to add a `--log` flag to clap based comm
 documentation = "https://docs.rs/clap-logflag"
 version = "0.1.0"
 edition = "2021"
-# TODO categories, description, keywords
+categories = ["command-line-interface", "config", "development-tools"]
+keywords = ["cli", "clap", "logging", "log", "syslog"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/smessmer/clap-logflag"
