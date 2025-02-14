@@ -67,7 +67,7 @@
 //! }
 //! ```
 //!
-//! # Flag Syntax
+//! # Command Line Syntax
 //! See [LogArgs](crate::clap::LogArgs) for a detailed explanation of the syntax for the `--log` argument.
 //!
 //! # Log Format

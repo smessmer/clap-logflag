@@ -78,7 +78,7 @@ fn main() {
 }
 ```
 
-## Flag Syntax
+## Command Line Syntax
 See [LogArgs](https://docs.rs/clap-logflag/latest/clap_logflag/clap/struct.LogArgs.html) for a detailed explanation of the syntax for the `--log` argument.
 
 ## Log Format
