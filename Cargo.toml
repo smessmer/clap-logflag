@@ -1,7 +1,7 @@
 [package]
 name = "clap-logflag"
 authors = ["Sebastian Messmer <messmer@cryfs.org>"]
-description = "Adds a `--log` flag to clap based applications to allow CLI users to configure logging from the command line. Can log to stderr, files and syslog."
+description = "This library can be used to add a `--log` flag to clap based command line applications that allows users to configure logging from the command line. It can log to stderr, files and syslog, powered by the fern logging backend."
 documentation = "https://docs.rs/clap-logflag"
 version = "0.1.0"
 edition = "2021"
