@@ -70,6 +70,7 @@
 //! See [LogArgs](crate::clap::LogArgs) for a detailed explanation of the syntax for the `--log` argument.
 //!
 
+#![allow(clippy::needless_doctest_main)]
 #![forbid(unsafe_code)]
 // TODO #![deny(missing_docs)]
 // We need to add explicit links because our `gen_readme.sh` script requires them.
