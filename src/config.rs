@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LoggingConfig {
+    // TODO It might be better to remove LoggingDisabled and instead represent it as an empty destination vector.
     LoggingDisabled,
     LoggingEnabled {
         destinations: Vec<LogDestinationConfig>,
