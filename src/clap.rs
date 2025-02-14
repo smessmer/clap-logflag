@@ -4,6 +4,19 @@ use crate::{LogDestinationConfig, LoggingConfig};
 
 // TODO Better error reporting when parsing fails
 
+/// A `--log` argument that can be added into your [clap] based CLI applications.
+///
+/// # Example
+/// ```rust
+/// #[derive(Debug, Parser)]
+/// struct CliArgs {
+///     // Use this to add the log flags to your application
+///     #[clap(flatten)]
+///     log: clap_logflag::LogArgs,
+///     //
+///     // ... your other cli args ...
+/// }
+/// ```
 #[derive(Parser, Debug)]
 pub struct LogArgs {
     // TODO Formatting of this is weird in `--help` output
@@ -20,13 +33,13 @@ pub struct LogArgs {
     /// destination = "stderr" | "syslog" | "file:path" | "none"
     ///
     /// Examples:
-    /// * "--log syslog"
-    /// * "--log stderr"
-    /// * "--log file:/path/to/file"
-    /// * "--log INFO:stderr"
-    /// * "--log DEBUG:file:/path/to/file"
-    /// * "--log TRACE:syslog"
-    /// * "--log none"
+    /// * `--log syslog`
+    /// * `--log stderr`
+    /// * `--log file:/path/to/file`
+    /// * `--log INFO:stderr`
+    /// * `--log DEBUG:file:/path/to/file`
+    /// * `--log TRACE:syslog`
+    /// * `--log none`
     #[arg(long, value_parser=parse_destination_config)]
     pub log: Vec<Option<LogDestinationConfig>>,
 }
@@ -36,6 +49,8 @@ fn parse_destination_config(input: &str) -> Result<Option<LogDestinationConfig>,
 }
 
 impl LogArgs {
+    /// Build the [LoggingConfig] defined by the command line arguments from [LogArgs].
+    /// If no `--log` argument is given, the default config is returned.
     pub fn or_default(&self, default: LoggingConfig) -> LoggingConfig {
         if self.log.is_empty() {
             // No `--log` argument given, use the default config
