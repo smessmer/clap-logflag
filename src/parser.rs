@@ -41,17 +41,32 @@ pub fn parse_config_definition(input: &str) -> Result<Option<LogDestinationConfi
     config_definition()
         .then_ignore(end())
         .parse(input)
-        .map_err(|err| anyhow!("Failed to parse log config: {err:?}"))
+        .map_err(handle_error)
+}
+
+fn handle_error(error: Vec<Simple<char>>) -> anyhow::Error {
+    let Some(error) = error.first() else {
+        return anyhow!("Failed to parse log config");
+    };
+
+    let Some(label) = error.label() else {
+        return anyhow!("Failed to parse log config");
+    };
+    anyhow!("Invalid {label}")
 }
 
 fn config_definition() -> impl Parser<char, Option<LogDestinationConfig>, Error = Simple<char>> {
-    log_level()
-        .then_ignore(just(':'))
-        .or_not()
-        .then(log_destination())
-        .map(move |(level, destination)| {
-            destination.map(|destination| LogDestinationConfig { level, destination })
-        })
+    choice((
+        log_level()
+            .then_ignore(just(':'))
+            .map(Some)
+            .then(log_destination()),
+        log_destination().map(|destination| (None, destination)),
+    ))
+    .map(move |(level, destination)| {
+        destination.map(|destination| LogDestinationConfig { level, destination })
+    })
+    .labelled("log config")
 }
 
 fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
@@ -62,6 +77,7 @@ fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
         just(LEVEL_DEBUG).to(LevelFilter::Debug),
         just(LEVEL_TRACE).to(LevelFilter::Trace),
     ))
+    .labelled("log level filter")
 }
 
 fn log_destination() -> impl Parser<char, Option<LogDestination>, Error = Simple<char>> {
@@ -73,12 +89,14 @@ fn log_destination() -> impl Parser<char, Option<LogDestination>, Error = Simple
             .ignore_then(path().map(|file| Some(LogDestination::File(file)))),
         just(DEST_NONE).to(None),
     ))
+    .labelled("log destination")
 }
 
 fn path() -> impl Parser<char, PathBuf, Error = Simple<char>> {
     take_until(end())
         .then_ignore(end())
         .map(|(chars, ())| String::from_iter(chars).into())
+        .labelled("logfile path")
 }
 
 #[cfg(test)]
@@ -124,7 +142,7 @@ mod tests {
     #[rstest]
     fn test_config_with_only_level(level: (LevelFilter, &str)) {
         let error = parse_config_definition(level.1).unwrap_err();
-        assert!(error.to_string().contains("Failed to parse log config"));
+        assert!(error.to_string().contains("Invalid log config"));
     }
 
     #[apply(destination)]
@@ -152,5 +170,42 @@ mod tests {
             }),
             config
         );
+    }
+
+    mod errors {
+        use super::*;
+
+        #[test]
+        fn invalid_filter() {
+            let error = parse_config_definition("invalid:stderr").unwrap_err();
+            // TODO "invalid log level filter" would be nicer
+            assert_eq!("Invalid log config", error.to_string());
+        }
+
+        #[test]
+        fn invalid_destination_with_filter() {
+            let error = parse_config_definition("ERROR:invalid").unwrap_err();
+            assert_eq!("Invalid log destination", error.to_string());
+        }
+
+        #[test]
+        fn missing_colon() {
+            let error = parse_config_definition("ERRORstderr").unwrap_err();
+            assert_eq!("Invalid log config", error.to_string());
+        }
+
+        #[test]
+        fn partially_matching_filter() {
+            let error = parse_config_definition("Ega").unwrap_err();
+            // TODO This gets misparsed as a filter since it starts like w filter with 'E' but we should treat this as an invalid log destination
+            assert_eq!("Invalid log level filter", error.to_string());
+        }
+
+        #[test]
+        fn invalid_destination_without_filter() {
+            let error = parse_config_definition("invalid").unwrap_err();
+            // TODO "invalid log destination" would be nicer
+            assert_eq!("Invalid log config", error.to_string());
+        }
     }
 }

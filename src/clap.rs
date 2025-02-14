@@ -2,8 +2,6 @@ use clap::Parser;
 
 use crate::{LogDestinationConfig, LoggingConfig};
 
-// TODO Better error reporting when parsing fails
-
 // We need to remove doc comments here, otherwise clap adds them to the help message
 #[allow(missing_docs)]
 #[derive(Parser, Debug)]
