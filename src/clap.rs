@@ -21,14 +21,16 @@ use crate::{LogDestinationConfig, LoggingConfig};
 /// ```
 #[derive(Parser, Debug)]
 pub struct LogArgs {
-    /// Log definition consisting of an optional log level, and a log destination.
+    /// Log definition consisting of an optional log level filter, and a log destination.
     /// You can define this argument multiple times for multiple log destinations.
     ///
     /// Logging can be disabled with `--log none`.
     /// If combined with other log definitions, those will take precedence and logging will not be disabled.
     ///
-    /// Format: destination | level:destination
-    /// * level = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
+    /// The argument can be combined with a level filter to only log messages of a certain level or higher to that destination.
+    ///
+    /// Format: destination | level_filter:destination
+    /// * level_filter = "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE"
     /// * destination = "stderr" | "syslog" | "file:path" | "none"
     ///
     /// Examples:
