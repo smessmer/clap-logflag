@@ -87,14 +87,6 @@ The format of the log messages uses an opinionated, reasonably pretty format by 
 
 ![Example log file](example_log.png)
 
-```bash
-[2025-02-14T00:16:14Z $${\color{blue}TRACE}$$ simple_cli] Some trace log
-[2025-02-14T00:16:14Z DEBUG simple_cli] Some debug log
-[2025-02-14T00:16:14Z INFO simple_cli] Some info log
-[2025-02-14T00:16:14Z WARN simple_cli] Some warn log
-[2025-02-14T00:16:14Z ERROR simple_cli] Some error log
-```
-
 Log lines contain a UTC timestamp, the log level and an executable name.
 
 When the logging destination is stderr and stderr is a terminal, then the log level is colorized.
