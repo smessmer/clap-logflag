@@ -15,7 +15,7 @@ use crate::{LogDestinationConfig, LoggingConfig};
 ///     // Use this to add the log flags to your application
 ///     #[clap(flatten)]
 ///     log: clap_logflag::LogArgs,
-///     //
+///     
 ///     // ... your other cli args ...
 /// }
 /// ```

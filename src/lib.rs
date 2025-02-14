@@ -29,6 +29,7 @@
 //!
 //! Then, add the [LogArgs](crate::clap::LogArgs) struct to your clap definition and initialize logging with it:
 //!
+// Note: This example is from [examples/simple_cli.rs]. We could include it here with `#[doc = include_str!(...)]`, but our `gen_readme.sh` script doesn't support that.
 //! ```rust
 //! use clap::Parser;
 //! use clap_logflag::LoggingConfig;
