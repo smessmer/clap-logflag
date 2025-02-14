@@ -261,4 +261,37 @@ fn none_destination_doesnt_disable_if_other_destination_is_present() {
     );
 }
 
+#[rstest]
+fn levels_are_case_insensitive(
+    #[values(
+        (LevelFilter::Error, "ERROR:"),
+        (LevelFilter::Error, "error:"),
+        (LevelFilter::Error, "ErRoR:"),
+        (LevelFilter::Warn, "WARN:"),
+        (LevelFilter::Warn, "warn:"),
+        (LevelFilter::Warn, "WaRn:"),
+        (LevelFilter::Info, "INFO:"),
+        (LevelFilter::Info, "info:"),
+        (LevelFilter::Info, "InFo:"),
+        (LevelFilter::Debug, "DEBUG:"),
+        (LevelFilter::Debug, "debug:"),
+        (LevelFilter::Debug, "DeBuG:"),
+        (LevelFilter::Trace, "TRACE:"),
+        (LevelFilter::Trace, "trace:"),
+        (LevelFilter::Trace, "TrAcE:")
+    )]
+    filter_level: (LevelFilter, &str),
+) {
+    let stderr = run_cli(
+        LevelFilter::Info,
+        &["--log", &log_arg_stderr(filter_level.1)],
+    );
+    let expected_level = filter_level.0;
+    assert!(
+        predicates::str::is_match(expected_log_regex(expected_level))
+            .unwrap()
+            .eval(&stderr)
+    );
+}
+
 // TODO Tests for logging to syslog

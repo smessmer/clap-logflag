@@ -4,19 +4,20 @@ use anyhow::{anyhow, Result};
 use chumsky::{
     error::Simple,
     prelude::{choice, end, just, take_until},
+    text::ident,
     Parser,
 };
 use log::LevelFilter;
 
 use super::config::{LogDestination, LogDestinationConfig};
 
-// TODO Allow lowercase for log levels
+const LEVEL_ERROR: &str = "error";
+const LEVEL_WARN: &str = "warn";
+const LEVEL_INFO: &str = "info";
+const LEVEL_DEBUG: &str = "debug";
+const LEVEL_TRACE: &str = "trace";
 
-const LEVEL_ERROR: &str = "ERROR";
-const LEVEL_WARN: &str = "WARN";
-const LEVEL_INFO: &str = "INFO";
-const LEVEL_DEBUG: &str = "DEBUG";
-const LEVEL_TRACE: &str = "TRACE";
+// TODO Allow upper case for destinations
 
 const DEST_STDERR: &str = "stderr";
 const DEST_SYSLOG: &str = "syslog";
@@ -56,28 +57,31 @@ fn handle_error(error: Vec<Simple<char>>) -> anyhow::Error {
 }
 
 fn config_definition() -> impl Parser<char, Option<LogDestinationConfig>, Error = Simple<char>> {
-    choice((
-        log_level()
+    log_destination()
+        .map(|destination| (None, destination))
+        .or(log_level()
             .then_ignore(just(':'))
             .map(Some)
-            .then(log_destination()),
-        log_destination().map(|destination| (None, destination)),
-    ))
-    .map(move |(level, destination)| {
-        destination.map(|destination| LogDestinationConfig { level, destination })
-    })
-    .labelled("log config")
+            .then(log_destination()))
+        .map(move |(level, destination)| {
+            destination.map(|destination| LogDestinationConfig { level, destination })
+        })
+        .labelled("log config")
 }
 
 fn log_level() -> impl Parser<char, LevelFilter, Error = Simple<char>> {
-    choice((
-        just(LEVEL_ERROR).to(LevelFilter::Error),
-        just(LEVEL_WARN).to(LevelFilter::Warn),
-        just(LEVEL_INFO).to(LevelFilter::Info),
-        just(LEVEL_DEBUG).to(LevelFilter::Debug),
-        just(LEVEL_TRACE).to(LevelFilter::Trace),
-    ))
-    .labelled("log level filter")
+    ident()
+        .try_map(
+            |level: String, span| match level.to_ascii_lowercase().as_str() {
+                LEVEL_ERROR => Ok(LevelFilter::Error),
+                LEVEL_WARN => Ok(LevelFilter::Warn),
+                LEVEL_INFO => Ok(LevelFilter::Info),
+                LEVEL_DEBUG => Ok(LevelFilter::Debug),
+                LEVEL_TRACE => Ok(LevelFilter::Trace),
+                _ => Err(Simple::custom(span, "Invalid log level filter")),
+            },
+        )
+        .labelled("log level filter")
 }
 
 fn log_destination() -> impl Parser<char, Option<LogDestination>, Error = Simple<char>> {
@@ -142,7 +146,7 @@ mod tests {
     #[rstest]
     fn test_config_with_only_level(level: (LevelFilter, &str)) {
         let error = parse_config_definition(level.1).unwrap_err();
-        assert!(error.to_string().contains("Invalid log config"));
+        assert!(error.to_string().contains("Invalid log level filter"));
     }
 
     #[apply(destination)]
@@ -178,8 +182,7 @@ mod tests {
         #[test]
         fn invalid_filter() {
             let error = parse_config_definition("invalid:stderr").unwrap_err();
-            // TODO "invalid log level filter" would be nicer
-            assert_eq!("Invalid log config", error.to_string());
+            assert_eq!("Invalid log level filter", error.to_string());
         }
 
         #[test]
@@ -191,7 +194,8 @@ mod tests {
         #[test]
         fn missing_colon() {
             let error = parse_config_definition("ERRORstderr").unwrap_err();
-            assert_eq!("Invalid log config", error.to_string());
+            // TODO "Invalid log destination" would be better
+            assert_eq!("Invalid log level filter", error.to_string());
         }
 
         #[test]
@@ -205,7 +209,7 @@ mod tests {
         fn invalid_destination_without_filter() {
             let error = parse_config_definition("invalid").unwrap_err();
             // TODO "invalid log destination" would be nicer
-            assert_eq!("Invalid log config", error.to_string());
+            assert_eq!("Invalid log level filter", error.to_string());
         }
     }
 }
