@@ -2,7 +2,7 @@
 //!
 //! The [clap-logflag](https://crates.io/crates/clap-logflag) library adds a `--log` flag to clap based applications
 //! that allows CLI users to configure logging from the command line.
-//! It can log to stderr, files and syslog.
+//! It can log to stderr, files and syslog, powered by the [fern](https://crates.io/crates/fern) logging backend.
 //!
 //! # Examples
 //! ```bash
