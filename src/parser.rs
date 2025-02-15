@@ -524,7 +524,7 @@ mod tests {
 
         #[test]
         fn file_destination_without_level_without_path() {
-            let error = parse_config_definition(&format!("{DEST_FILE}")).unwrap_err();
+            let error = parse_config_definition(DEST_FILE).unwrap_err();
             assert_eq!(
                 "File log destination requires a path. Example: `--log file:/path/to/file`",
                 error.to_string()
