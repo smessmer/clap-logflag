@@ -1,0 +1,8 @@
+Version 0.2.0 (unreleased)
+--------------
+* Significantly better error messages when the user tries to use `--log` with an invalid configuration.
+* Replace the `chumsky` parser with a simple hand-rolled parser.
+
+Version 0.1.0
+--------------
+* initial release
