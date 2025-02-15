@@ -54,3 +54,41 @@ pub enum LogDestination {
     /// Log to the system log
     Syslog,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn disabled() {
+        let config = LoggingConfig::disabled();
+        assert!(config.destinations().is_empty());
+    }
+
+    #[test]
+    fn new() {
+        let config = LoggingConfig::new(vec![
+            LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Info),
+            },
+            LogDestinationConfig {
+                destination: LogDestination::File(PathBuf::from("/tmp/logfile")),
+                level: Some(log::LevelFilter::Debug),
+            },
+        ]);
+        assert_eq!(
+            vec![
+                LogDestinationConfig {
+                    destination: LogDestination::Stderr,
+                    level: Some(log::LevelFilter::Info),
+                },
+                LogDestinationConfig {
+                    destination: LogDestination::File(PathBuf::from("/tmp/logfile")),
+                    level: Some(log::LevelFilter::Debug),
+                },
+            ],
+            config.destinations()
+        );
+    }
+}
