@@ -2,6 +2,7 @@ Version 0.2.0 (unreleased)
 --------------
 * Significantly better error messages when the user tries to use `--log` with an invalid configuration.
 * Replace the `chumsky` parser with a simple hand-rolled parser.
+* Performance optimization: Precalculate and store logger formatter options instead of calculating them for every log message
 
 Version 0.1.0
 --------------
