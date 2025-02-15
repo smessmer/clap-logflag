@@ -106,13 +106,13 @@ mod tests {
 
         #[test]
         fn no_flags_present_chooses_default() {
-            let args = LogArgs { log: vec![None] };
-            let default = LoggingConfig::new(vec![LogDestinationConfig {
+            let args = LogArgs { log: vec![] };
+            let default = vec![LogDestinationConfig {
                 destination: LogDestination::Stderr,
                 level: Some(log::LevelFilter::Info),
-            }]);
-            let parsed = args.or_default(default.clone());
-            assert_eq!(0, parsed.destinations().len());
+            }];
+            let parsed = args.or_default(LoggingConfig::new(default.clone()));
+            assert_eq!(default, parsed.destinations());
         }
 
         #[test]
