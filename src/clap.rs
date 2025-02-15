@@ -50,3 +50,123 @@ impl LogArgs {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    mod parse_destination_config {
+        use crate::LogDestination;
+
+        use super::*;
+
+        #[test]
+        fn empty_string() {
+            assert_eq!(
+                parse_destination_config(""),
+                Err(
+                    "Invalid empty log destination. Choose stderr, syslog, file, or none"
+                        .to_string()
+                )
+            );
+        }
+
+        #[test]
+        fn none() {
+            assert_eq!(parse_destination_config("none"), Ok(None));
+        }
+
+        #[test]
+        fn stderr() {
+            assert_eq!(
+                parse_destination_config("stderr"),
+                Ok(Some(LogDestinationConfig {
+                    destination: LogDestination::Stderr,
+                    level: None
+                }))
+            );
+        }
+
+        #[test]
+        fn stderr_with_level() {
+            assert_eq!(
+                parse_destination_config("DEBUG:stderr"),
+                Ok(Some(LogDestinationConfig {
+                    destination: LogDestination::Stderr,
+                    level: Some(log::LevelFilter::Debug)
+                }))
+            );
+        }
+    }
+
+    mod or_default {
+        use crate::LogDestination;
+
+        use super::*;
+
+        #[test]
+        fn no_flags_present_chooses_default() {
+            let args = LogArgs { log: vec![None] };
+            let default = LoggingConfig::new(vec![LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Info),
+            }]);
+            let parsed = args.or_default(default.clone());
+            assert_eq!(0, parsed.destinations().len());
+        }
+
+        #[test]
+        fn none_flag_present() {
+            let args = LogArgs { log: vec![None] };
+            let parsed = args.or_default(LoggingConfig::new(vec![LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Info),
+            }]));
+            assert_eq!(parsed.destinations().len(), 0);
+        }
+
+        #[test]
+        fn one_flag_present() {
+            let destinations = vec![LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Info),
+            }];
+            let args = LogArgs {
+                log: destinations.iter().cloned().map(Some).collect(),
+            };
+            let parsed = args.or_default(LoggingConfig::new(vec![]));
+            assert_eq!(destinations, parsed.destinations());
+        }
+
+        #[test]
+        fn two_flags_present() {
+            let destinations = vec![
+                LogDestinationConfig {
+                    destination: LogDestination::Stderr,
+                    level: Some(log::LevelFilter::Info),
+                },
+                LogDestinationConfig {
+                    destination: LogDestination::File(std::path::PathBuf::from("/tmp/logfile")),
+                    level: Some(log::LevelFilter::Debug),
+                },
+            ];
+            let args = LogArgs {
+                log: destinations.iter().cloned().map(Some).collect(),
+            };
+            let parsed = args.or_default(LoggingConfig::new(vec![]));
+            assert_eq!(destinations, parsed.destinations());
+        }
+
+        #[test]
+        fn two_flags_with_one_none_present() {
+            let first_flag = LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Info),
+            };
+            let destinations = vec![Some(first_flag.clone()), None];
+            let args = LogArgs { log: destinations };
+            let parsed = args.or_default(LoggingConfig::new(vec![]));
+            assert_eq!(vec![first_flag], parsed.destinations());
+        }
+    }
+}
