@@ -7,8 +7,6 @@ use rstest_reuse::{self, *};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 
-// TODO It seems our CI codecov setup doesn't count coverage from integration tests? Why is that?
-
 #[template]
 fn default_level(
     #[values(
