@@ -138,3 +138,57 @@ fn exe_name() -> Option<String> {
         })
         .unwrap_or(None)
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use super::*;
+    use log::LevelFilter;
+    use rstest::rstest;
+
+    #[test]
+    fn test_exe_name() {
+        let actual_exe_name = exe_name().unwrap();
+        assert!(
+            actual_exe_name.starts_with("clap_logflag"),
+            "exe_name should start with clap_logflag but was {actual_exe_name}"
+        );
+    }
+
+    #[test]
+    fn test_process_name() {
+        let actual_process_name = process_name(None, "cargo_crate_name");
+        assert!(
+            actual_process_name.starts_with("clap_logflag"),
+            "process_name should start with clap_logflag but was {actual_process_name}"
+        );
+    }
+
+    #[rstest]
+    fn test_build_logger(
+        #[values(
+            LogDestination::Stderr,
+            LogDestination::File(PathBuf::from("test.log")),
+            LogDestination::Syslog
+        )]
+        destination: LogDestination,
+        #[values(
+            LevelFilter::Error,
+            LevelFilter::Warn,
+            LevelFilter::Info,
+            LevelFilter::Debug,
+            LevelFilter::Trace
+        )]
+        level: LevelFilter,
+    ) {
+        let config = LogDestinationConfig {
+            destination,
+            level: None,
+        };
+        let logger = build_logger(&config, level, "process_name".to_string())
+            .unwrap()
+            .into_log();
+        assert_eq!(logger.0, level);
+    }
+}
