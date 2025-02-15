@@ -169,13 +169,7 @@ mod tests {
 
     #[rstest]
     fn test_build_logger(
-        #[values(
-            LogDestination::Stderr,
-            // TODO Re-enable this, but in a way that doesn't write to a non-temp location in the local file system
-            // LogDestination::File(PathBuf::from("test.log")),
-            LogDestination::Syslog
-        )]
-        destination: LogDestination,
+        #[values(LogDestination::Stderr, LogDestination::Syslog)] destination: LogDestination,
         #[values(
             LevelFilter::Error,
             LevelFilter::Warn,
@@ -187,6 +181,29 @@ mod tests {
     ) {
         let config = LogDestinationConfig {
             destination,
+            level: None,
+        };
+        let logger = build_logger(&config, level, "process_name".to_string())
+            .unwrap()
+            .into_log();
+        assert_eq!(logger.0, level);
+    }
+
+    #[rstest]
+    fn test_build_file_logger(
+        #[values(
+            LevelFilter::Error,
+            LevelFilter::Warn,
+            LevelFilter::Info,
+            LevelFilter::Debug,
+            LevelFilter::Trace
+        )]
+        level: LevelFilter,
+    ) {
+        let tempdir = assert_fs::TempDir::new().unwrap();
+        let file = tempdir.path().join("logfile");
+        let config = LogDestinationConfig {
+            destination: LogDestination::File(file),
             level: None,
         };
         let logger = build_logger(&config, level, "process_name".to_string())
