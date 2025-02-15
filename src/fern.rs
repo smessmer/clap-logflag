@@ -143,8 +143,6 @@ fn exe_name() -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use std::path::PathBuf;
-
     use super::*;
     use log::LevelFilter;
     use rstest::rstest;
