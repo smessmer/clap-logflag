@@ -171,7 +171,7 @@ fn parse_config_definition_with_level(
     extras: &[&str],
 ) -> Result<Option<LogDestinationConfig>, ParseError> {
     let level_filter = parse_level(level)?;
-    let destination = tokenize_and_parse_destination(Some(level_str), destination, extras)?;
+    let destination = tokenize_and_parse_destination(level_str, destination, extras)?;
     Ok(destination.map(|destination| LogDestinationConfig {
         level: Some(level_filter),
         destination,
@@ -189,15 +189,17 @@ fn parse_level(level: TokenLevel) -> Result<LevelFilter, ParseError> {
 }
 
 fn tokenize_and_parse_destination(
-    level: Option<&str>,
+    level: &str,
     destination: &str,
     extras: &[&str],
 ) -> Result<Option<LogDestination>, ParseError> {
     match Token::parse(destination) {
-        Some(Token::Destination(destination)) => parse_destination(level, destination, extras),
+        Some(Token::Destination(destination)) => {
+            parse_destination(Some(level), destination, extras)
+        }
         Some(Token::Level(_)) => {
             Err(ParseError::new(format!(
-                "Expected log destination but found level filter `{destination}`. Please add a destination. Example: `--log {destination}:stderr`"
+                "Expected log destination but found level filter `{destination}`. Please add a destination. Example: `--log {level}:stderr`"
             )))
         }
         None => {
@@ -267,6 +269,23 @@ mod tests {
             (LevelFilter::Trace, LEVEL_TRACE_UPPER)
         )]
         level: (LevelFilter, &str),
+    ) {
+    }
+    #[template]
+    fn level2(
+        #[values(
+            (LevelFilter::Error, LEVEL_ERROR),
+            (LevelFilter::Error, LEVEL_ERROR_UPPER),
+            (LevelFilter::Warn, LEVEL_WARN),
+            (LevelFilter::Warn, LEVEL_WARN_UPPER),
+            (LevelFilter::Info, LEVEL_INFO),
+            (LevelFilter::Info, LEVEL_INFO_UPPER),
+            (LevelFilter::Debug, LEVEL_DEBUG),
+            (LevelFilter::Debug, LEVEL_DEBUG_UPPER),
+            (LevelFilter::Trace, LEVEL_TRACE),
+            (LevelFilter::Trace, LEVEL_TRACE_UPPER)
+        )]
+        level2: (LevelFilter, &str),
     ) {
     }
     #[template]
@@ -562,6 +581,17 @@ mod tests {
                     "File log destination requires a path. Example: `--log {}:file:/path/to/file`",
                     level.1
                 ),
+                error.to_string()
+            );
+        }
+
+        #[apply(level)]
+        #[apply(level2)]
+        #[rstest]
+        fn multiple_levels(level: (LevelFilter, &str), level2: (LevelFilter, &str)) {
+            let error = parse_config_definition(&format!("{}:{}", level.1, level2.1)).unwrap_err();
+            assert_eq!(
+                format!("Expected log destination but found level filter `{}`. Please add a destination. Example: `--log {}:stderr`", level2.1, level.1),
                 error.to_string()
             );
         }
