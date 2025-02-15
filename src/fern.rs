@@ -171,7 +171,8 @@ mod tests {
     fn test_build_logger(
         #[values(
             LogDestination::Stderr,
-            LogDestination::File(PathBuf::from("test.log")),
+            // TODO Re-enable this, but in a way that doesn't write to a non-temp location in the local file system
+            // LogDestination::File(PathBuf::from("test.log")),
             LogDestination::Syslog
         )]
         destination: LogDestination,
