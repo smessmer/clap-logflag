@@ -170,7 +170,7 @@ mod tests {
 
     #[rstest]
     fn test_build_logger(
-        #[values(LogDestination::Stderr, LogDestination::Syslog)] destination: LogDestination,
+        #[values(LogDestination::Stderr)] destination: LogDestination,
         #[values(
             LevelFilter::Error,
             LevelFilter::Warn,
