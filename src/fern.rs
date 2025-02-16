@@ -161,8 +161,6 @@ mod tests {
     use predicates::Predicate;
     use rstest::rstest;
 
-    // TODO Check coverage and add tests for code uncovered by unit tests
-
     #[test]
     fn test_exe_name() {
         let actual_exe_name = exe_name().unwrap();
