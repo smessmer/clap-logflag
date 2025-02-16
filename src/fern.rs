@@ -274,6 +274,22 @@ mod tests {
     }
 
     #[rstest]
+    fn test_build_main_logger_disabled(
+        #[values(
+            LevelFilter::Error,
+            LevelFilter::Warn,
+            LevelFilter::Info,
+            LevelFilter::Debug,
+            LevelFilter::Trace
+        )]
+        default_level: LevelFilter,
+    ) {
+        let config = LoggingConfig::disabled();
+        let built = build_main_logger(config, default_level, None, "process_name");
+        assert!(built.is_none());
+    }
+
+    #[rstest]
     fn test_build_main_logger_stderr_and_file(
         #[values(
             LevelFilter::Error,
