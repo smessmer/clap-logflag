@@ -144,7 +144,7 @@ fn exe_name() -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use log::{Level, LevelFilter};
+    use log::LevelFilter;
     use predicates::Predicate;
     use rstest::rstest;
 
@@ -214,23 +214,31 @@ mod tests {
     }
 
     #[rstest]
-    fn test_log_formatter_file() {
+    fn test_log_formatter_file(
+        #[values(
+            LevelFilter::Error,
+            LevelFilter::Warn,
+            LevelFilter::Info,
+            LevelFilter::Debug,
+            LevelFilter::Trace
+        )]
+        level: LevelFilter,
+    ) {
         let tempdir = assert_fs::TempDir::new().unwrap();
         let file = tempdir.path().join("logfile");
         let config = LogDestinationConfig {
             destination: LogDestination::File(file.clone()),
             level: None,
         };
-        let (level, logger) = build_logger(&config, LevelFilter::Debug, "process_name".to_string())
+        let (actual_level, logger) = build_logger(&config, level, "process_name".to_string())
             .unwrap()
             .into_log();
-        assert_eq!(level, LevelFilter::Debug);
+        assert_eq!(level, actual_level);
         logger.log(
             &log::Record::builder()
                 .args(format_args!("test log message"))
-                .level(Level::Debug)
+                .level(level.to_level().unwrap())
                 .target("my-test")
-                .line(Some(1))
                 .build(),
         );
         logger.flush();
