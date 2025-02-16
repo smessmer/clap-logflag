@@ -182,8 +182,7 @@ mod tests {
     }
 
     #[rstest]
-    fn test_build_logger(
-        #[values(LogDestination::Stderr)] destination: LogDestination,
+    fn test_build_stderr_logger(
         #[values(
             LevelFilter::Error,
             LevelFilter::Warn,
@@ -194,7 +193,7 @@ mod tests {
         level: LevelFilter,
     ) {
         let config = LogDestinationConfig {
-            destination,
+            destination: LogDestination::Stderr,
             level: None,
         };
         let logger = build_logger(&config, level, "process_name".to_string())
@@ -256,10 +255,66 @@ mod tests {
         );
         logger.flush();
 
-        let timestamp_regex = r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
-        let expected_log_regex =
-            format!(r"\[{timestamp_regex} {level} my-test\] test log message\n");
+        let expected_log_regex = format!(
+            r"\[{} {level} my-test\] test log message\n",
+            timestamp_regex()
+        );
+        let actually_logged = std::fs::read_to_string(&file).unwrap();
+        // Assert it matches
+        assert!(
+            predicates::str::is_match(expected_log_regex)
+                .unwrap()
+                .eval(&actually_logged),
+            "actually_logged: \"{actually_logged}\""
+        );
+    }
 
+    const fn timestamp_regex() -> &'static str {
+        r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)"
+    }
+
+    #[rstest]
+    fn test_build_main_logger_stderr_and_file(
+        #[values(
+            LevelFilter::Error,
+            LevelFilter::Warn,
+            LevelFilter::Info,
+            LevelFilter::Debug,
+            LevelFilter::Trace
+        )]
+        default_level: LevelFilter,
+    ) {
+        let tempdir = assert_fs::TempDir::new().unwrap();
+        let file = tempdir.path().join("logfile");
+        let config = LoggingConfig::new(vec![
+            LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: None,
+            },
+            LogDestinationConfig {
+                destination: LogDestination::File(file.clone()),
+                level: None,
+            },
+        ]);
+        let (actual_level, logger) = build_main_logger(config, default_level, None, "process_name")
+            .unwrap()
+            .into_log();
+        assert_eq!(actual_level, default_level);
+
+        // And test actual logging
+        logger.log(
+            &log::Record::builder()
+                .args(format_args!("test log message"))
+                .level(default_level.to_level().unwrap())
+                .target("my-test")
+                .build(),
+        );
+        logger.flush();
+
+        let expected_log_regex = format!(
+            r"\[{} {default_level} my-test\] test log message\n",
+            timestamp_regex()
+        );
         let actually_logged = std::fs::read_to_string(&file).unwrap();
         // Assert it matches
         assert!(
