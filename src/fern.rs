@@ -38,9 +38,23 @@ pub fn _init_logging(
     cargo_bin_name: Option<&str>,
     cargo_crate_name: &str,
 ) -> Result<()> {
+    if let Some(main_logger) =
+        build_main_logger(config, default_level, cargo_bin_name, cargo_crate_name)
+    {
+        main_logger.apply()?;
+    }
+    Ok(())
+}
+
+fn build_main_logger(
+    config: LoggingConfig,
+    default_level: log::LevelFilter,
+    cargo_bin_name: Option<&str>,
+    cargo_crate_name: &str,
+) -> Option<Dispatch> {
     if config.destinations().is_empty() {
         // Logging is disabled
-        return Ok(());
+        return None;
     }
 
     let process_name = process_name(cargo_bin_name, cargo_crate_name);
@@ -51,8 +65,7 @@ pub fn _init_logging(
             main_logger = main_logger.chain(logger);
         }
     }
-    main_logger.apply()?;
-    Ok(())
+    Some(main_logger)
 }
 
 fn build_logger(
