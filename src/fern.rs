@@ -144,7 +144,8 @@ fn exe_name() -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use log::LevelFilter;
+    use log::{Level, LevelFilter};
+    use predicates::Predicate;
     use rstest::rstest;
 
     // TODO Check coverage and add tests for code uncovered by unit tests
@@ -210,5 +211,41 @@ mod tests {
             .unwrap()
             .into_log();
         assert_eq!(logger.0, level);
+    }
+
+    #[rstest]
+    fn test_log_formatter_file() {
+        let tempdir = assert_fs::TempDir::new().unwrap();
+        let file = tempdir.path().join("logfile");
+        let config = LogDestinationConfig {
+            destination: LogDestination::File(file.clone()),
+            level: None,
+        };
+        let (level, logger) = build_logger(&config, LevelFilter::Debug, "process_name".to_string())
+            .unwrap()
+            .into_log();
+        assert_eq!(level, LevelFilter::Debug);
+        logger.log(
+            &log::Record::builder()
+                .args(format_args!("test log message"))
+                .level(Level::Debug)
+                .target("my-test")
+                .line(Some(1))
+                .build(),
+        );
+        logger.flush();
+
+        let timestamp_regex = r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
+        let expected_log_regex =
+            format!(r"\[{timestamp_regex} {level} my-test\] test log message\n");
+
+        let actually_logged = std::fs::read_to_string(&file).unwrap();
+        // Assert it matches
+        assert!(
+            predicates::str::is_match(expected_log_regex)
+                .unwrap()
+                .eval(&actually_logged),
+            "actually_logged: \"{actually_logged}\""
+        );
     }
 }
