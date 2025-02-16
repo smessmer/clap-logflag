@@ -17,7 +17,7 @@ jobs:
         command: ["build", "test"]
         profile: ["", "--release"]
         features: ["", "--all-features", "--no-default-features"]
-        toolchain: ["stable", "nightly", "1.78"]
+        toolchain: ["stable", "nightly", "1.74"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1

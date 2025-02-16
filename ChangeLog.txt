@@ -1,3 +1,7 @@
+Version 0.2.1
+--------------
+* Reduce MSRV requirement from Rust 1.78 to Rust 1.74
+
 Version 0.2.0
 --------------
 * Significantly better error messages when the user tries to use `--log` with an invalid configuration.
