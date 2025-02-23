@@ -36,11 +36,11 @@
 //!
 //! #[derive(Debug, Parser)]
 //! struct CliArgs {
+//!     // ... your other cli args ...
+//!
 //!     // Use this to add the log flags to your application
 //!     #[clap(flatten)]
 //!     log: clap_logflag::LogArgs,
-//!     
-//!     // ... your other cli args ...
 //! }
 //!
 //! fn main() {
