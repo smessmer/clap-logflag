@@ -10,7 +10,7 @@ keywords = ["cli", "clap", "logging", "log", "syslog"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/smessmer/clap-logflag"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [features]
 serde = ["dep:serde", "log/serde"]
