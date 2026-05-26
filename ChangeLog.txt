@@ -1,6 +1,6 @@
 Version 0.3.0
 --------------
-* MSRV: Rust 1.88 is required now
+* MSRV: Rust 1.88 is required now, switched to Rust 2024 edition
 * Update dependencies
 * Add `serde` feature to allow serialization of logging configuration
 
