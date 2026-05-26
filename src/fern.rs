@@ -2,8 +2,8 @@ use std::io::IsTerminal as _;
 
 use anyhow::Result;
 use fern::{
-    colors::{Color, ColoredLevelConfig},
     Dispatch, FormatCallback,
+    colors::{Color, ColoredLevelConfig},
 };
 
 use super::config::{LogDestination, LogDestinationConfig, LoggingConfig};

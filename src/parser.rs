@@ -108,7 +108,8 @@ pub fn parse_config_definition(input: &str) -> Result<Option<LogDestinationConfi
             } else {
                 // Seems we only have a level, no destination.
                 Err(ParseError::new(format!(
-                    "Expected log destination but found level filter `{}`. Please add a destination. Example: `--log {}:stderr`", parts[0], parts[0],
+                    "Expected log destination but found level filter `{}`. Please add a destination. Example: `--log {}:stderr`",
+                    parts[0], parts[0],
                 )))
             }
         }
@@ -197,11 +198,9 @@ fn tokenize_and_parse_destination(
         Some(Token::Destination(destination)) => {
             parse_destination(Some(level), destination, extras)
         }
-        Some(Token::Level(_)) => {
-            Err(ParseError::new(format!(
-                "Expected log destination but found level filter `{destination}`. Please add a destination. Example: `--log {level}:stderr`"
-            )))
-        }
+        Some(Token::Level(_)) => Err(ParseError::new(format!(
+            "Expected log destination but found level filter `{destination}`. Please add a destination. Example: `--log {level}:stderr`"
+        ))),
         None => {
             let error = if destination.is_empty() {
                 ParseError::new(format!(
@@ -209,8 +208,8 @@ fn tokenize_and_parse_destination(
                 ))
             } else {
                 ParseError::new(format!(
-                "Invalid log destination `{destination}`. Choose {DEST_STDERR}, {DEST_SYSLOG}, {DEST_FILE}, or {DEST_NONE}"
-            ))
+                    "Invalid log destination `{destination}`. Choose {DEST_STDERR}, {DEST_SYSLOG}, {DEST_FILE}, or {DEST_NONE}"
+                ))
             };
             Err(error)
         }
@@ -591,7 +590,10 @@ mod tests {
         fn multiple_levels(level: (LevelFilter, &str), level2: (LevelFilter, &str)) {
             let error = parse_config_definition(&format!("{}:{}", level.1, level2.1)).unwrap_err();
             assert_eq!(
-                format!("Expected log destination but found level filter `{}`. Please add a destination. Example: `--log {}:stderr`", level2.1, level.1),
+                format!(
+                    "Expected log destination but found level filter `{}`. Please add a destination. Example: `--log {}:stderr`",
+                    level2.1, level.1
+                ),
                 error.to_string()
             );
         }

@@ -1,4 +1,4 @@
-use assert_fs::{assert::PathAssert as _, fixture::ChildPath, prelude::PathChild as _, TempDir};
+use assert_fs::{TempDir, assert::PathAssert as _, fixture::ChildPath, prelude::PathChild as _};
 use escargot::CargoBuild;
 use log::LevelFilter;
 use predicates::prelude::*;
@@ -122,9 +122,11 @@ fn stderr(default_level: LevelFilter, filter_level_1: (Option<LevelFilter>, &str
     let actual_log = run_cli(default_level, &["--log", &log_arg_stderr(filter_level_1.1)]);
     let expected_level = filter_level_1.0.unwrap_or(default_level);
     let expected_log_regex = expected_log_regex(expected_level);
-    assert!(predicates::str::is_match(expected_log_regex)
-        .unwrap()
-        .eval(&actual_log));
+    assert!(
+        predicates::str::is_match(expected_log_regex)
+            .unwrap()
+            .eval(&actual_log)
+    );
 }
 
 struct TempLogFile {
