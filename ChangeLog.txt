@@ -1,3 +1,8 @@
+Version 0.2.2
+--------------
+* Update dependencies
+* Add `serde` feature to allow serialization of logging configuration
+
 Version 0.2.1
 --------------
 * Reduce MSRV requirement from Rust 1.78 to Rust 1.74

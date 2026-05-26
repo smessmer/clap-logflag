@@ -3,7 +3,7 @@ name = "clap-logflag"
 authors = ["Sebastian Messmer <messmer@cryfs.org>"]
 description = "This library can be used to add a `--log` flag to clap based command line applications that allows users to configure logging from the command line. It can log to stderr, files and syslog, powered by the fern logging backend."
 documentation = "https://docs.rs/clap-logflag"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 categories = ["command-line-interface", "config", "development-tools"]
 keywords = ["cli", "clap", "logging", "log", "syslog"]
@@ -11,6 +11,9 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/smessmer/clap-logflag"
 rust-version = "1.74"
+
+[features]
+serde = ["dep:serde", "log/serde"]
 
 [dependencies]
 log = "^0.4.8"
@@ -20,6 +23,7 @@ anyhow = "^1.0.46"
 clap = {version = "^4", features = ["derive"]}
 humantime = "^2.1"
 embed-doc-image = "^0.1.4"
+serde = {version = "^1", features = ["derive"], optional = true}
 
 [dev-dependencies]
 rstest = "^0.26"
@@ -27,3 +31,4 @@ rstest_reuse = "^0.7"
 escargot = "^0.5"
 assert_fs = "^1.1"
 predicates = "^3.1"
+postcard = {version = "^1", features = ["use-std"]}

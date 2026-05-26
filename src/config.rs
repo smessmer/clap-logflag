@@ -3,6 +3,7 @@ use std::path::PathBuf;
 /// This enum represents the whole logging configuration,
 /// including all logging destinations and their respective log level filters.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct LoggingConfig {
     /// List of destinations to log to.
     /// If the list of destinations is empty, logging is disabled.
@@ -32,6 +33,7 @@ impl LoggingConfig {
 
 /// Configuration for a log destination, containing the destination and the log level.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct LogDestinationConfig {
     /// The destination to log to.
     pub destination: LogDestination,
@@ -44,6 +46,7 @@ pub struct LogDestinationConfig {
 
 /// A destination that can be logged to, e.g. a file or the system log.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum LogDestination {
     /// Log to stderr
     Stderr,
@@ -90,5 +93,27 @@ mod tests {
             ],
             config.destinations()
         );
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn logging_config_round_trips_through_postcard() {
+        let cfg = LoggingConfig::new(vec![
+            LogDestinationConfig {
+                destination: LogDestination::Syslog,
+                level: Some(log::LevelFilter::Info),
+            },
+            LogDestinationConfig {
+                destination: LogDestination::File(PathBuf::from("/tmp/x.log")),
+                level: None,
+            },
+            LogDestinationConfig {
+                destination: LogDestination::Stderr,
+                level: Some(log::LevelFilter::Warn),
+            },
+        ]);
+        let bytes = postcard::to_stdvec(&cfg).unwrap();
+        let restored: LoggingConfig = postcard::from_bytes(&bytes).unwrap();
+        assert_eq!(cfg, restored);
     }
 }
