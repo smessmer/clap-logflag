@@ -16,14 +16,14 @@ rust-version = "1.88"
 serde = ["dep:serde", "log/serde"]
 
 [dependencies]
-log = "^0.4.8"
+log = "^0.4.17"
 fern = {version = "^0.7.1", features = ["syslog-7", "colored"]}
 syslog = "^7"
 anyhow = "^1.0.46"
 clap = {version = "^4", features = ["derive"]}
 humantime = "^2.1"
 embed-doc-image = "^0.1.4"
-serde = {version = "^1", features = ["derive"], optional = true}
+serde = {version = "^1.0.185", features = ["derive"], optional = true}
 
 [dev-dependencies]
 rstest = "^0.26"
